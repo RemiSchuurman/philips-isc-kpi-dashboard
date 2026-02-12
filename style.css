@@ -1,17 +1,19 @@
 :root {
-  --bg: #f3f6fb;
-  --bg-grad-a: #f9fbff;
-  --bg-grad-b: #edf3ff;
+  --bg: #edf3fa;
+  --bg-grad-a: #f7fbff;
+  --bg-grad-b: #e7f0fb;
   --card: #ffffff;
-  --text: #10203a;
-  --muted: #5f6b7e;
-  --primary: #2c6bed;
+  --text: #0c1f3f;
+  --muted: #50617d;
+  --primary: #00629b;
+  --primary-strong: #005189;
+  --primary-soft: #e8f3fb;
   --success: #24a148;
   --warning: #ef8f20;
   --danger: #da1e28;
-  --border: #e1e8f5;
-  --shadow-soft: 0 8px 22px rgba(14, 26, 45, 0.08);
-  --shadow-focus: 0 10px 28px rgba(44, 107, 237, 0.2);
+  --border: #d6e2f1;
+  --shadow-soft: 0 10px 26px rgba(0, 57, 112, 0.08);
+  --shadow-focus: 0 12px 30px rgba(0, 98, 155, 0.22);
 }
 
 * {
@@ -22,8 +24,8 @@ body {
   margin: 0;
   font-family: "Segoe UI", "Inter", Arial, sans-serif;
   background: var(--bg);
-  background-image: radial-gradient(circle at 15% 0%, var(--bg-grad-a), transparent 45%),
-    radial-gradient(circle at 90% 10%, var(--bg-grad-b), transparent 42%);
+  background-image: radial-gradient(circle at 18% 0%, var(--bg-grad-a), transparent 43%),
+    radial-gradient(circle at 90% 9%, var(--bg-grad-b), transparent 40%);
   color: var(--text);
 }
 
@@ -33,12 +35,22 @@ body {
   align-items: center;
   gap: 1rem;
   padding: 1rem 1.5rem 1.1rem;
-  background: rgba(255, 255, 255, 0.88);
-  border-bottom: 1px solid rgba(225, 232, 245, 0.95);
+  background: rgba(255, 255, 255, 0.93);
+  border-bottom: 1px solid rgba(214, 226, 241, 0.95);
   position: sticky;
   top: 0;
   z-index: 10;
   backdrop-filter: blur(10px);
+}
+
+.app-header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #00629b 0%, #0a85c8 55%, #29a9e0 100%);
 }
 
 .app-header h1 {
@@ -100,22 +112,23 @@ body {
   padding: 0.7rem 0.8rem;
   border-radius: 10px;
   border: 1px solid var(--border);
-  background: linear-gradient(180deg, #fafdff 0%, #f3f8ff 100%);
+  background: linear-gradient(180deg, #ffffff 0%, #f4f9ff 100%);
   cursor: pointer;
   color: var(--text);
   font-weight: 650;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
 }
 
 .stream-btn:hover {
   transform: translateY(-1px);
-  border-color: #cfdcf7;
-  box-shadow: 0 6px 16px rgba(44, 107, 237, 0.12);
+  border-color: #bfd4e9;
+  box-shadow: 0 8px 18px rgba(0, 98, 155, 0.14);
 }
 
 .stream-btn.active {
-  border-color: var(--primary);
-  background: linear-gradient(180deg, #edf4ff 0%, #e4efff 100%);
+  border-color: #73a8ce;
+  background: linear-gradient(180deg, #eff7fd 0%, #e1f1fb 100%);
+  color: #0a2f53;
   box-shadow: var(--shadow-focus);
 }
 
@@ -140,17 +153,17 @@ details.kpi-group {
   border: 1px solid var(--border);
   border-radius: 12px;
   overflow: hidden;
-  background: #fcfdff;
-  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  background: #ffffff;
+  transition: box-shadow 0.28s ease, border-color 0.28s ease;
 }
 
 details.kpi-group:hover {
-  border-color: #d3def3;
+  border-color: #bcd4e9;
 }
 
 details.kpi-group[open] {
   box-shadow: var(--shadow-soft);
-  border-color: #ccd9f2;
+  border-color: #9fc1de;
 }
 
 details.kpi-group > summary {
@@ -158,11 +171,12 @@ details.kpi-group > summary {
   cursor: pointer;
   padding: 0.78rem 0.9rem;
   font-weight: 700;
-  background: linear-gradient(180deg, #f9fbff 0%, #f4f8ff 100%);
+  background: linear-gradient(180deg, #f8fbff 0%, #f0f7fd 100%);
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 0.8rem;
+  transition: background 0.24s ease;
 }
 
 details.kpi-group > summary::-webkit-details-marker {
@@ -189,8 +203,8 @@ details.kpi-group > summary::-webkit-details-marker {
   border-radius: 999px;
   border: 1px solid transparent;
   font-weight: 700;
-  color: #3c4960;
-  background: #f0f4fb;
+  color: #2f4869;
+  background: #edf4fb;
 }
 
 .kpi-status-dot {
@@ -231,18 +245,18 @@ details.kpi-group > summary::-webkit-details-marker {
 }
 
 .kpi-summary-action {
-  color: #65738b;
+  color: #4e6787;
   font-size: 0.78rem;
   padding: 0.3rem 0.5rem;
   border-radius: 8px;
-  border: 1px solid #dbe4f6;
-  background: #f8fbff;
+  border: 1px solid #cfe0f1;
+  background: #f3f8fd;
 }
 
 details.kpi-group[open] .kpi-summary-action {
-  color: #3d4f73;
-  border-color: #c8d7f2;
-  background: #edf4ff;
+  color: #17456f;
+  border-color: #9cc1df;
+  background: #e4f1fb;
 }
 
 .kpi-content {
@@ -251,13 +265,13 @@ details.kpi-group[open] .kpi-summary-action {
 }
 
 details.kpi-group[open] .kpi-content {
-  animation: kpi-reveal 0.24s ease-out;
+  animation: kpi-reveal 0.46s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 @keyframes kpi-reveal {
   from {
     opacity: 0;
-    transform: translateY(-6px) scaleY(0.98);
+    transform: translateY(-8px) scaleY(0.985);
   }
 
   to {
@@ -289,9 +303,9 @@ details.kpi-group[open] .kpi-content {
 .fillrate-chart {
   margin-bottom: 0.95rem;
   padding: 0.65rem;
-  border: 1px solid #e2e9f5;
+  border: 1px solid #d8e5f3;
   border-radius: 10px;
-  background: #fbfdff;
+  background: #f9fcff;
 }
 
 .fillrate-bars {
@@ -342,7 +356,7 @@ details.kpi-group[open] .kpi-content {
   border-collapse: collapse;
   font-size: 0.82rem;
   background: #fff;
-  border: 1px solid #e2e9f5;
+  border: 1px solid #d8e5f3;
   border-radius: 10px;
   overflow: hidden;
 }
@@ -359,8 +373,8 @@ details.kpi-group[open] .kpi-content {
 
 .kpi-matrix-table thead th,
 .kpi-action-table thead th {
-  background: #f5f8ff;
-  color: #4b5a76;
+  background: #eef5fc;
+  color: #39587a;
   font-weight: 700;
   position: sticky;
   top: 0;
@@ -375,7 +389,7 @@ details.kpi-group[open] .kpi-content {
 .kpi-matrix-table .is-total-row th,
 .kpi-matrix-table .is-total-row td {
   font-weight: 700;
-  background: #f8fbff;
+  background: #f3f8fd;
 }
 
 .value-good {
@@ -414,9 +428,9 @@ details.kpi-group[open] .kpi-content {
 }
 
 .mode-toggle-btn {
-  border: 1px solid #cedaf0;
-  background: #f4f8ff;
-  color: #35548e;
+  border: 1px solid #b9d2e8;
+  background: #edf5fc;
+  color: #205384;
   border-radius: 999px;
   padding: 0.28rem 0.62rem;
   font-size: 0.77rem;
@@ -425,9 +439,9 @@ details.kpi-group[open] .kpi-content {
 }
 
 .mode-toggle-btn.active {
-  border-color: #2c6bed;
+  border-color: var(--primary);
   color: #fff;
-  background: #2c6bed;
+  background: var(--primary);
 }
 
 .status {
