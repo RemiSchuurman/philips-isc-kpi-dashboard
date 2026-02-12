@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Philips ISC PH - Daily KPI Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="app-header">
+    <div>
+      <h1>Philips - Integrated Supply Chain Personal Health</h1>
+      <p class="sub-title">Daily Management KPI Dashboard</p>
+    </div>
+    <div class="header-meta">
+      <span id="currentStream">Selecteer een value stream</span>
+      <span id="currentWeek">Week -</span>
+    </div>
+  </header>
+
+  <main class="layout">
+    <aside class="stream-panel">
+      <h2>Value streams</h2>
+      <ul id="streamList" class="stream-list"></ul>
+    </aside>
+
+    <section class="dashboard-panel">
+      <div id="emptyState" class="empty-state">
+        Kies links een value stream om de KPI-overzichten te openen.
+      </div>
+
+      <div id="dashboardContent" class="dashboard-content hidden">
+        <div id="kpiContainer" class="kpi-container"></div>
+
+        <section class="context-grid">
+          <article class="context-card">
+            <h3>Highlights</h3>
+            <ul id="highlightsList"></ul>
+          </article>
+          <article class="context-card">
+            <h3>Lowlights</h3>
+            <ul id="lowlightsList"></ul>
+          </article>
+          <article class="context-card">
+            <h3>Request for help</h3>
+            <ul id="helpList"></ul>
+          </article>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
