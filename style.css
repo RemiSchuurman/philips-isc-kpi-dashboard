@@ -59,6 +59,42 @@ body {
   letter-spacing: 0.2px;
 }
 
+.header-left {
+  display: grid;
+  gap: 0.42rem;
+}
+
+.brand-strip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.34rem 0.62rem;
+  width: fit-content;
+  border-radius: 999px;
+  border: 1px solid #c4d8eb;
+  background: linear-gradient(180deg, #f4f9fe 0%, #edf5fc 100%);
+}
+
+.philips-logo {
+  display: block;
+  width: 52px;
+  height: auto;
+}
+
+.brand-separator {
+  width: 1px;
+  height: 14px;
+  background: #bdd2e6;
+}
+
+.brand-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #275984;
+}
+
 .sub-title {
   margin: 0.25rem 0 0;
   color: var(--muted);
@@ -436,6 +472,13 @@ details.kpi-group[open] .kpi-content {
   font-size: 0.77rem;
   font-weight: 700;
   cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.mode-toggle-btn:hover {
+  transform: translateY(-1px);
+  border-color: #91b8d7;
+  box-shadow: 0 8px 18px rgba(0, 98, 155, 0.14);
 }
 
 .mode-toggle-btn.active {
@@ -490,6 +533,19 @@ details.kpi-group[open] .kpi-content {
 }
 
 @media (max-width: 980px) {
+  .app-header {
+    align-items: flex-start;
+  }
+
+  .header-left {
+    width: 100%;
+  }
+
+  .brand-strip {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
   .layout {
     grid-template-columns: 1fr;
   }
