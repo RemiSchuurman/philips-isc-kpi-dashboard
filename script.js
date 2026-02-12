@@ -1,12 +1,49 @@
+const HISTORY_WEEKS = [
+  "W46", "W47", "W48", "W49", "W50", "W51", "W52",
+  "W01", "W02", "W03", "W04", "W05", "W06"
+];
+
+const FUTURE_WEEKS = [
+  "W07", "W08", "W09", "W10", "W11", "W12", "W13",
+  "W14", "W15", "W16", "W17", "W18", "W19"
+];
+
+function marketValues(name, values) {
+  return { name, values };
+}
+
 const dashboardData = {
   Shaving: {
     week: "Week 6 - 2026",
     kpis: {
-      Fillrate: [
-        "Target: 98.0% | Actual: 97.2% | Status: yellow",
-        "Top issue: late inbound motor components",
-        "Main market impact: DACH"
-      ],
+      Fillrate: {
+        type: "fillrate",
+        weeks: HISTORY_WEEKS,
+        total: [95.2, 94.8, 93.9, 92.7, 92.4, 93.3, 94.1, 92.8, 91.9, 92.5, 93.6, 94.2, 92.6],
+        markets: [
+          marketValues("DACH", [94.9, 94.3, 93.5, 91.8, 91.4, 92.7, 93.8, 92.1, 91.2, 91.8, 92.9, 93.4, 91.7]),
+          marketValues("Benelux", [95.5, 95.0, 94.1, 93.6, 93.1, 93.8, 94.6, 93.1, 92.4, 93.0, 94.0, 94.6, 93.0]),
+          marketValues("UK&I", [95.0, 94.5, 93.8, 92.9, 92.1, 93.0, 93.9, 92.4, 91.7, 92.2, 93.2, 93.9, 92.3]),
+          marketValues("France", [95.4, 95.2, 94.4, 93.3, 92.8, 93.5, 94.5, 93.2, 92.1, 92.8, 93.8, 94.3, 92.9])
+        ],
+        actions: [
+          {
+            rootcause: "Late inbound motor components",
+            countermeasure: "Extra supplier-call offs en weekly expediting",
+            owner: "Sourcing Lead"
+          },
+          {
+            rootcause: "Changeover losses op SHV-2",
+            countermeasure: "SMED blitz en freeze op variant swaps",
+            owner: "Production Manager"
+          },
+          {
+            rootcause: "Forecast bias DACH promo",
+            countermeasure: "Demand review met sales en planner lock",
+            owner: "Demand Planning Lead"
+          }
+        ]
+      },
       "Unconstrained demand fulfillment": [
         "Target: 96.5% | Actual: 95.8% | Status: yellow",
         "Backlog trend: -4.1% vs vorige week",
@@ -17,11 +54,28 @@ const dashboardData = {
         "Main deviation: packaging changeover loss",
         "Recovery plan active for next 2 werkdagen"
       ],
-      "Safety stock fulfillment": [
-        "SKU coverage > policy: 88% | Status: red",
-        "Critical SKUs below threshold: 12",
-        "Expedite requests gestart voor blades"
-      ],
+      "Safety stock fulfillment": {
+        type: "safety_stock",
+        weeks: FUTURE_WEEKS,
+        percentage: {
+          total: [69, 71, 73, 74, 76, 78, 79, 81, 82, 84, 85, 86, 87],
+          markets: [
+            marketValues("DACH", [65, 67, 69, 70, 72, 74, 75, 77, 78, 80, 81, 82, 83]),
+            marketValues("Benelux", [72, 73, 74, 75, 77, 78, 79, 81, 82, 83, 84, 85, 86]),
+            marketValues("UK&I", [68, 69, 71, 72, 74, 76, 77, 79, 80, 81, 82, 83, 84]),
+            marketValues("France", [70, 71, 72, 73, 75, 77, 78, 80, 81, 82, 83, 84, 85])
+          ]
+        },
+        dfs: {
+          total: [26, 27, 28, 29, 30, 30, 31, 32, 33, 34, 35, 35, 36],
+          markets: [
+            marketValues("DACH", [22, 23, 24, 25, 26, 26, 27, 28, 29, 30, 30, 31, 32]),
+            marketValues("Benelux", [28, 28, 29, 30, 30, 31, 32, 33, 33, 34, 35, 35, 36]),
+            marketValues("UK&I", [24, 25, 26, 27, 28, 29, 29, 30, 31, 32, 33, 33, 34]),
+            marketValues("France", [25, 26, 27, 28, 29, 29, 30, 31, 32, 33, 33, 34, 35])
+          ]
+        }
+      },
       UVAP: [
         "UVAP score: 91.4% | Target: 92.0% | Status: yellow",
         "Main impact: promotional mix variance",
@@ -49,11 +103,29 @@ const dashboardData = {
   "Power toothbrush": {
     week: "Week 6 - 2026",
     kpis: {
-      Fillrate: [
-        "Target: 98.5% | Actual: 98.8% | Status: green",
-        "Steady performance across EU/NA",
-        "No critical stock-outs gemeld"
-      ],
+      Fillrate: {
+        type: "fillrate",
+        weeks: HISTORY_WEEKS,
+        total: [94.0, 94.3, 94.7, 94.9, 95.1, 95.0, 95.3, 95.6, 95.2, 94.8, 95.4, 95.7, 95.1],
+        markets: [
+          marketValues("DACH", [93.5, 93.8, 94.2, 94.6, 94.8, 94.6, 95.0, 95.3, 94.9, 94.5, 95.1, 95.5, 94.8]),
+          marketValues("Benelux", [94.4, 94.7, 95.0, 95.1, 95.4, 95.3, 95.6, 95.8, 95.5, 95.0, 95.7, 96.0, 95.4]),
+          marketValues("UK&I", [93.8, 94.0, 94.4, 94.6, 94.9, 94.8, 95.1, 95.5, 95.0, 94.6, 95.3, 95.6, 95.0]),
+          marketValues("France", [94.2, 94.5, 94.9, 95.0, 95.2, 95.1, 95.4, 95.7, 95.4, 95.0, 95.6, 95.9, 95.3])
+        ],
+        actions: [
+          {
+            rootcause: "Incidentele vertraging spare heads",
+            countermeasure: "Safety batch op reserve-assemblage gepland",
+            owner: "Planning Lead"
+          },
+          {
+            rootcause: "Carrier variability UK",
+            countermeasure: "Slot shift naar performance carrier",
+            owner: "Logistics Manager"
+          }
+        ]
+      },
       "Unconstrained demand fulfillment": [
         "Target: 97.0% | Actual: 96.6% | Status: yellow",
         "Holiday uplift veroorzaakt korte dip",
@@ -64,11 +136,28 @@ const dashboardData = {
         "Stable planning discipline op alle lijnen",
         "Minor exception in spare heads"
       ],
-      "Safety stock fulfillment": [
-        "SKU coverage > policy: 94% | Status: green",
-        "Critical SKUs below threshold: 4",
-        "Inbound planning op schema"
-      ],
+      "Safety stock fulfillment": {
+        type: "safety_stock",
+        weeks: FUTURE_WEEKS,
+        percentage: {
+          total: [82, 83, 84, 84, 85, 86, 86, 87, 88, 88, 89, 90, 90],
+          markets: [
+            marketValues("DACH", [79, 80, 81, 82, 83, 84, 84, 85, 86, 86, 87, 88, 88]),
+            marketValues("Benelux", [84, 85, 85, 86, 86, 87, 88, 88, 89, 89, 90, 91, 91]),
+            marketValues("UK&I", [80, 81, 82, 83, 83, 84, 85, 85, 86, 87, 87, 88, 89]),
+            marketValues("France", [82, 83, 84, 84, 85, 86, 86, 87, 88, 88, 89, 90, 90])
+          ]
+        },
+        dfs: {
+          total: [34, 34, 35, 35, 36, 36, 37, 37, 38, 38, 39, 39, 40],
+          markets: [
+            marketValues("DACH", [31, 31, 32, 33, 33, 34, 34, 35, 35, 36, 36, 37, 37]),
+            marketValues("Benelux", [36, 36, 37, 37, 38, 38, 39, 39, 40, 40, 41, 41, 42]),
+            marketValues("UK&I", [32, 33, 33, 34, 34, 35, 35, 36, 36, 37, 37, 38, 39]),
+            marketValues("France", [33, 34, 34, 35, 35, 36, 36, 37, 37, 38, 38, 39, 39])
+          ]
+        }
+      },
       UVAP: [
         "UVAP score: 92.7% | Target: 92.0% | Status: green",
         "Mix verbetering in replacement heads",
@@ -96,11 +185,34 @@ const dashboardData = {
   IPL: {
     week: "Week 6 - 2026",
     kpis: {
-      Fillrate: [
-        "Target: 97.5% | Actual: 96.1% | Status: red",
-        "Main issue: constrained PCB supply",
-        "Service level impact in Benelux and FR"
-      ],
+      Fillrate: {
+        type: "fillrate",
+        weeks: HISTORY_WEEKS,
+        total: [93.1, 92.9, 92.2, 91.8, 91.4, 90.8, 91.3, 91.9, 92.1, 92.5, 92.0, 91.7, 91.4],
+        markets: [
+          marketValues("DACH", [92.7, 92.4, 91.8, 91.2, 90.8, 90.1, 90.9, 91.3, 91.6, 92.0, 91.4, 91.0, 90.7]),
+          marketValues("Benelux", [93.3, 93.0, 92.4, 92.0, 91.6, 91.0, 91.5, 92.1, 92.4, 92.7, 92.2, 91.9, 91.6]),
+          marketValues("UK&I", [92.9, 92.6, 92.0, 91.5, 91.0, 90.5, 91.0, 91.6, 91.8, 92.2, 91.8, 91.4, 91.1]),
+          marketValues("France", [93.4, 93.1, 92.6, 92.1, 91.8, 91.2, 91.7, 92.3, 92.5, 92.9, 92.4, 92.0, 91.8])
+        ],
+        actions: [
+          {
+            rootcause: "Constrained PCB supply",
+            countermeasure: "Alternate supplier vrijgave versneld",
+            owner: "Commodity Manager"
+          },
+          {
+            rootcause: "Lagere test-yield week 3-4",
+            countermeasure: "Process window update op final test",
+            owner: "Quality Engineer"
+          },
+          {
+            rootcause: "Late final packing handoff",
+            countermeasure: "Dagelijkse OTTR war-room met operations",
+            owner: "Operations Lead"
+          }
+        ]
+      },
       "Unconstrained demand fulfillment": [
         "Target: 96.0% | Actual: 94.8% | Status: red",
         "Backlog trend: +5.3% vs vorige week",
@@ -111,11 +223,28 @@ const dashboardData = {
         "Main variance from supplier takt time",
         "Stabilization plan in uitvoering"
       ],
-      "Safety stock fulfillment": [
-        "SKU coverage > policy: 82% | Status: red",
-        "Critical SKUs below threshold: 16",
-        "Priority allocation actief"
-      ],
+      "Safety stock fulfillment": {
+        type: "safety_stock",
+        weeks: FUTURE_WEEKS,
+        percentage: {
+          total: [62, 64, 66, 67, 69, 70, 72, 73, 75, 76, 78, 79, 81],
+          markets: [
+            marketValues("DACH", [58, 60, 62, 63, 65, 66, 68, 69, 71, 72, 74, 75, 77]),
+            marketValues("Benelux", [64, 66, 67, 68, 70, 71, 73, 74, 76, 77, 79, 80, 82]),
+            marketValues("UK&I", [60, 62, 64, 65, 67, 68, 70, 71, 73, 74, 76, 77, 79]),
+            marketValues("France", [63, 65, 66, 67, 69, 70, 72, 73, 75, 76, 78, 79, 81])
+          ]
+        },
+        dfs: {
+          total: [18, 19, 20, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29],
+          markets: [
+            marketValues("DACH", [15, 16, 17, 17, 18, 19, 20, 21, 22, 23, 24, 24, 25]),
+            marketValues("Benelux", [19, 20, 21, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]),
+            marketValues("UK&I", [17, 18, 18, 19, 20, 21, 22, 23, 24, 25, 25, 26, 27]),
+            marketValues("France", [18, 19, 20, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29])
+          ]
+        }
+      },
       UVAP: [
         "UVAP score: 89.8% | Target: 91.5% | Status: red",
         "Unfavorable mix due to constrained premium variants",
@@ -160,10 +289,27 @@ function getStatusClass(line) {
 }
 
 function getOverallKpiStatus(details) {
-  const statuses = details.map(getStatusClass).filter(Boolean);
-  if (statuses.includes("red")) return "red";
-  if (statuses.includes("yellow")) return "yellow";
-  if (statuses.includes("green")) return "green";
+  if (Array.isArray(details)) {
+    const statuses = details.map(getStatusClass).filter(Boolean);
+    if (statuses.includes("red")) return "red";
+    if (statuses.includes("yellow")) return "yellow";
+    if (statuses.includes("green")) return "green";
+    return "neutral";
+  }
+
+  if (details.type === "fillrate") {
+    const values = details.total || [];
+    if (values.some((value) => value < 93)) return "red";
+    return "green";
+  }
+
+  if (details.type === "safety_stock") {
+    const values = details.percentage?.total || [];
+    if (values.some((value) => value < 70)) return "red";
+    if (values.some((value) => value < 80)) return "yellow";
+    return "green";
+  }
+
   return "neutral";
 }
 
@@ -181,6 +327,207 @@ function renderList(targetElement, items) {
     li.textContent = item;
     targetElement.appendChild(li);
   });
+}
+
+function formatPercent(value) {
+  return `${Number(value).toFixed(1)}%`;
+}
+
+function createMatrixTable(weeks, totalValues, markets, options = {}) {
+  const {
+    firstColumnLabel = "Markt",
+    formatValue = (value) => String(value),
+    getValueClass = () => "",
+    rowNameTotal = "Totaal"
+  } = options;
+
+  const table = document.createElement("table");
+  table.className = "kpi-matrix-table";
+
+  const thead = document.createElement("thead");
+  const headRow = document.createElement("tr");
+  const firstHead = document.createElement("th");
+  firstHead.textContent = firstColumnLabel;
+  headRow.appendChild(firstHead);
+  weeks.forEach((week) => {
+    const th = document.createElement("th");
+    th.textContent = week;
+    headRow.appendChild(th);
+  });
+  thead.appendChild(headRow);
+  table.appendChild(thead);
+
+  const tbody = document.createElement("tbody");
+  const rows = [{ name: rowNameTotal, values: totalValues, isTotal: true }, ...markets];
+
+  rows.forEach((row) => {
+    const tr = document.createElement("tr");
+    if (row.isTotal) tr.className = "is-total-row";
+
+    const nameCell = document.createElement("th");
+    nameCell.scope = "row";
+    nameCell.textContent = row.name;
+    tr.appendChild(nameCell);
+
+    row.values.forEach((value) => {
+      const td = document.createElement("td");
+      td.textContent = formatValue(value);
+      const className = getValueClass(value);
+      if (className) td.classList.add(className);
+      tr.appendChild(td);
+    });
+
+    tbody.appendChild(tr);
+  });
+
+  table.appendChild(tbody);
+  return table;
+}
+
+function renderFillrateContent(contentEl, details) {
+  const chartWrap = document.createElement("div");
+  chartWrap.className = "fillrate-chart";
+
+  const chartTitle = document.createElement("p");
+  chartTitle.className = "kpi-section-title";
+  chartTitle.textContent = "Totale fillrate - afgelopen 13 weken";
+  chartWrap.appendChild(chartTitle);
+
+  const bars = document.createElement("div");
+  bars.className = "fillrate-bars";
+  details.total.forEach((value, index) => {
+    const barItem = document.createElement("div");
+    barItem.className = "fillrate-bar-item";
+
+    const bar = document.createElement("div");
+    bar.className = `fillrate-bar ${value >= 93 ? "ok" : "risk"}`;
+    bar.style.height = `${Math.max(18, (value - 85) * 8)}px`;
+    bar.title = `${details.weeks[index]}: ${formatPercent(value)}`;
+    barItem.appendChild(bar);
+
+    const label = document.createElement("span");
+    label.className = "fillrate-bar-label";
+    label.textContent = details.weeks[index];
+    barItem.appendChild(label);
+
+    bars.appendChild(barItem);
+  });
+  chartWrap.appendChild(bars);
+
+  const tableWrap = document.createElement("div");
+  tableWrap.className = "kpi-table-wrap";
+  const tableTitle = document.createElement("p");
+  tableTitle.className = "kpi-section-title";
+  tableTitle.textContent = "Fillrate per markt en totaal";
+  tableWrap.appendChild(tableTitle);
+  tableWrap.appendChild(
+    createMatrixTable(details.weeks, details.total, details.markets, {
+      formatValue: formatPercent,
+      getValueClass: (value) => (value >= 93 ? "value-good" : "value-bad")
+    })
+  );
+
+  const actionWrap = document.createElement("div");
+  actionWrap.className = "kpi-table-wrap";
+  const actionTitle = document.createElement("p");
+  actionTitle.className = "kpi-section-title";
+  actionTitle.textContent = "Rootcause, countermeasure en owner";
+  actionWrap.appendChild(actionTitle);
+
+  const actionTable = document.createElement("table");
+  actionTable.className = "kpi-action-table";
+  actionTable.innerHTML = `
+    <thead>
+      <tr>
+        <th>Rootcause</th>
+        <th>Countermeasure</th>
+        <th>Owner</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${details.actions
+        .map(
+          (item) => `
+            <tr>
+              <td>${item.rootcause}</td>
+              <td>${item.countermeasure}</td>
+              <td>${item.owner}</td>
+            </tr>
+          `
+        )
+        .join("")}
+    </tbody>
+  `;
+  actionWrap.appendChild(actionTable);
+
+  contentEl.appendChild(chartWrap);
+  contentEl.appendChild(tableWrap);
+  contentEl.appendChild(actionWrap);
+}
+
+function renderSafetyStockContent(contentEl, details) {
+  let mode = "percentage";
+
+  const controls = document.createElement("div");
+  controls.className = "kpi-controls-row";
+
+  const title = document.createElement("p");
+  title.className = "kpi-section-title";
+  title.textContent = "Safety stock planning - komende 13 weken";
+  controls.appendChild(title);
+
+  const rightControls = document.createElement("div");
+  rightControls.className = "kpi-controls";
+
+  const modeLabel = document.createElement("span");
+  modeLabel.className = "mode-label";
+  modeLabel.textContent = "Weergave: % gevuld";
+  rightControls.appendChild(modeLabel);
+
+  const toggleBtn = document.createElement("button");
+  toggleBtn.type = "button";
+  toggleBtn.className = "mode-toggle-btn";
+  toggleBtn.textContent = "DFS";
+  rightControls.appendChild(toggleBtn);
+
+  controls.appendChild(rightControls);
+  contentEl.appendChild(controls);
+
+  const tableHost = document.createElement("div");
+  tableHost.className = "kpi-table-wrap";
+  contentEl.appendChild(tableHost);
+
+  function renderModeTable() {
+    tableHost.innerHTML = "";
+    if (mode === "percentage") {
+      modeLabel.textContent = "Weergave: % gevuld";
+      tableHost.appendChild(
+        createMatrixTable(details.weeks, details.percentage.total, details.percentage.markets, {
+          formatValue: (value) => `${value}%`,
+          getValueClass: (value) => {
+            if (value < 70) return "value-bad";
+            if (value < 80) return "value-warn";
+            return "value-good";
+          }
+        })
+      );
+    } else {
+      modeLabel.textContent = "Weergave: days future sales";
+      tableHost.appendChild(
+        createMatrixTable(details.weeks, details.dfs.total, details.dfs.markets, {
+          formatValue: (value) => `${value}d`
+        })
+      );
+    }
+  }
+
+  toggleBtn.addEventListener("click", () => {
+    mode = mode === "percentage" ? "dfs" : "percentage";
+    toggleBtn.classList.toggle("active", mode === "dfs");
+    renderModeTable();
+  });
+
+  renderModeTable();
 }
 
 function renderKpis(streamName) {
@@ -212,21 +559,26 @@ function renderKpis(streamName) {
     const listEl = document.createElement("ul");
     listEl.className = "kpi-list";
 
-    details.forEach((line) => {
-      const li = document.createElement("li");
-      const statusClass = getStatusClass(line);
-      if (statusClass) {
-        li.innerHTML = line.replace(
-          `Status: ${statusClass}`,
-          `<span class="status ${statusClass}">Status: ${statusClass}</span>`
-        );
-      } else {
-        li.textContent = line;
-      }
-      listEl.appendChild(li);
-    });
-
-    contentEl.appendChild(listEl);
+    if (Array.isArray(details)) {
+      details.forEach((line) => {
+        const li = document.createElement("li");
+        const statusClass = getStatusClass(line);
+        if (statusClass) {
+          li.innerHTML = line.replace(
+            `Status: ${statusClass}`,
+            `<span class="status ${statusClass}">Status: ${statusClass}</span>`
+          );
+        } else {
+          li.textContent = line;
+        }
+        listEl.appendChild(li);
+      });
+      contentEl.appendChild(listEl);
+    } else if (details.type === "fillrate") {
+      renderFillrateContent(contentEl, details);
+    } else if (details.type === "safety_stock") {
+      renderSafetyStockContent(contentEl, details);
+    }
     detailsEl.appendChild(contentEl);
     kpiContainer.appendChild(detailsEl);
   });
