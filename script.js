@@ -159,6 +159,21 @@ function getStatusClass(line) {
   return "";
 }
 
+function getOverallKpiStatus(details) {
+  const statuses = details.map(getStatusClass).filter(Boolean);
+  if (statuses.includes("red")) return "red";
+  if (statuses.includes("yellow")) return "yellow";
+  if (statuses.includes("green")) return "green";
+  return "neutral";
+}
+
+function getStatusLabel(status) {
+  if (status === "green") return "Groen";
+  if (status === "yellow") return "Oranje";
+  if (status === "red") return "Rood";
+  return "Onbekend";
+}
+
 function renderList(targetElement, items) {
   targetElement.innerHTML = "";
   items.forEach((item) => {
@@ -175,9 +190,20 @@ function renderKpis(streamName) {
   Object.entries(streamData.kpis).forEach(([groupName, details]) => {
     const detailsEl = document.createElement("details");
     detailsEl.className = "kpi-group";
+    const overallStatus = getOverallKpiStatus(details);
+    detailsEl.dataset.status = overallStatus;
 
     const summaryEl = document.createElement("summary");
-    summaryEl.textContent = groupName;
+    summaryEl.innerHTML = `
+      <span class="kpi-title">${groupName}</span>
+      <span class="kpi-summary-meta">
+        <span class="kpi-status-pill ${overallStatus}">
+          <span class="kpi-status-dot"></span>
+          ${getStatusLabel(overallStatus)}
+        </span>
+        <span class="kpi-summary-action">Details</span>
+      </span>
+    `;
     detailsEl.appendChild(summaryEl);
 
     const contentEl = document.createElement("div");
