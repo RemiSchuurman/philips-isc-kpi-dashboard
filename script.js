@@ -580,6 +580,16 @@ function renderKpis(streamName) {
       renderSafetyStockContent(contentEl, details);
     }
     detailsEl.appendChild(contentEl);
+
+    detailsEl.addEventListener("toggle", () => {
+      if (!detailsEl.open) return;
+      kpiContainer.querySelectorAll(".kpi-group").forEach((otherDetails) => {
+        if (otherDetails !== detailsEl) {
+          otherDetails.open = false;
+        }
+      });
+    });
+
     kpiContainer.appendChild(detailsEl);
   });
 }

@@ -247,6 +247,23 @@ details.kpi-group[open] .kpi-summary-action {
 
 .kpi-content {
   padding: 0.8rem 0.95rem 0.95rem;
+  transform-origin: top center;
+}
+
+details.kpi-group[open] .kpi-content {
+  animation: kpi-reveal 0.24s ease-out;
+}
+
+@keyframes kpi-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scaleY(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scaleY(1);
+  }
 }
 
 .kpi-list {
