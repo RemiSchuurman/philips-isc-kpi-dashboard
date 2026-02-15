@@ -23,15 +23,26 @@ In **Project Settings > API**:
 
 ## 4) (Later) frontend koppelen
 
-Als we van static mock data naar live data gaan:
+De frontend is al gekoppeld op basis van:
 
-1. Voeg `@supabase/supabase-js` toe
-2. Gebruik `SUPABASE_URL` en `SUPABASE_ANON_KEY` via env vars
-3. Query flow:
-   - value streams ophalen
-   - laatste weekly update per stream ophalen
-   - KPI entries + notes laden
+1. Open de website
+2. Klik op **Data uploaden**
+3. Vul `SUPABASE_URL` en `SUPABASE_ANON_KEY` in
+4. Upload Excel met kolommen:
+   - Value stream
+   - Markt
+   - Week (`YYYY.WW`, bijvoorbeeld `2026.06`)
+   - PAG
+   - MAG
+   - AG
+   - Project
+   - Requested quantity
+   - Delivered
+5. Na upload wordt Fillrate direct uit Supabase geladen in:
+   - view per value stream
+   - view per markt
 
 ## 5) Security baseline (aanbevolen)
 
-Zet Row Level Security aan zodra we user login toevoegen. Voor nu (MVP) kan read-only zonder auth voor demo-data, maar productie moet met policies.
+Voor deze MVP staat upload open voor iedereen met de anon key (RLS policies in schema).
+Voor productie: voeg authenticatie toe en maak policies restrictiever.

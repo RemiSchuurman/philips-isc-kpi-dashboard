@@ -1,12 +1,17 @@
-# Philips ISC PH KPI Dashboard (starter)
+# Philips ISC PH KPI Dashboard
 
-Eerste statische MVP van een Daily Management KPI Dashboard, geschikt voor deploy op Vercel.
+MVP van een Daily Management KPI Dashboard (Vercel-ready) met:
+
+- dashboard per value stream
+- dashboard per markt
+- Fillrate berekening vanuit Supabase data
+- Excel upload flow in de frontend
 
 ## Inhoud
 
 - `index.html`: de dashboard pagina
 - `style.css`: styling
-- `script.js`: data + interactie (value stream selectie en inklapbare KPI-blokken)
+- `script.js`: dashboard logica, Supabase koppeling en Excel upload flow
 - `vercel.json`: basis Vercel configuratie
 - `supabase/schema.sql`: SQL startpunt voor database
 - `supabase/setup.md`: Supabase setup instructies
@@ -67,6 +72,23 @@ vercel
 vercel --prod
 ```
 
-## Volgende stap
+## Supabase + Excel upload
 
-Bij volgende iteratie koppelen we deze KPI data aan Supabase tabellen zodat updates per week en value stream vanuit database geladen worden.
+1. Maak een Supabase project.
+2. Run `supabase/schema.sql` in SQL Editor.
+3. Open de website en klik **Data uploaden**.
+4. Vul `SUPABASE_URL` en `SUPABASE_ANON_KEY` in.
+5. Upload een Excel-bestand met kolommen:
+   - `Value stream`
+   - `Markt`
+   - `Week` (format `YYYY.WW`, bv `2026.06`)
+   - `PAG`
+   - `MAG`
+   - `AG`
+   - `Project`
+   - `Requested quantity`
+   - `Delivered`
+
+Fillrate wordt berekend als:
+
+`sum(Delivered) / sum(Requested quantity) * 100`

@@ -1,277 +1,41 @@
-const HISTORY_WEEKS = [
-  "W46", "W47", "W48", "W49", "W50", "W51", "W52",
-  "W01", "W02", "W03", "W04", "W05", "W06"
+const DEFAULT_STREAMS = ["Shaving", "Power toothbrush", "IPL"];
+const DEFAULT_MARKETS = ["DACH", "Benelux", "UK&I", "France"];
+const KPI_GROUPS = [
+  "Fillrate",
+  "Unconstrained demand fulfillment",
+  "USP-CSP",
+  "Safety stock fulfillment",
+  "UVAP",
+  "OTTR"
 ];
 
-const FUTURE_WEEKS = [
-  "W07", "W08", "W09", "W10", "W11", "W12", "W13",
-  "W14", "W15", "W16", "W17", "W18", "W19"
+const REQUIRED_COLUMNS = [
+  "Value stream",
+  "Markt",
+  "Week",
+  "PAG",
+  "MAG",
+  "AG",
+  "Project",
+  "Requested quantity",
+  "Delivered"
 ];
 
-function marketValues(name, values) {
-  return { name, values };
-}
-
-const dashboardData = {
-  Shaving: {
-    week: "Week 6 - 2026",
-    kpis: {
-      Fillrate: {
-        type: "fillrate",
-        weeks: HISTORY_WEEKS,
-        total: [95.2, 94.8, 93.9, 92.7, 92.4, 93.3, 94.1, 92.8, 91.9, 92.5, 93.6, 94.2, 92.6],
-        markets: [
-          marketValues("DACH", [94.9, 94.3, 93.5, 91.8, 91.4, 92.7, 93.8, 92.1, 91.2, 91.8, 92.9, 93.4, 91.7]),
-          marketValues("Benelux", [95.5, 95.0, 94.1, 93.6, 93.1, 93.8, 94.6, 93.1, 92.4, 93.0, 94.0, 94.6, 93.0]),
-          marketValues("UK&I", [95.0, 94.5, 93.8, 92.9, 92.1, 93.0, 93.9, 92.4, 91.7, 92.2, 93.2, 93.9, 92.3]),
-          marketValues("France", [95.4, 95.2, 94.4, 93.3, 92.8, 93.5, 94.5, 93.2, 92.1, 92.8, 93.8, 94.3, 92.9])
-        ],
-        actions: [
-          {
-            rootcause: "Late inbound motor components",
-            countermeasure: "Extra supplier-call offs en weekly expediting",
-            owner: "Sourcing Lead"
-          },
-          {
-            rootcause: "Changeover losses op SHV-2",
-            countermeasure: "SMED blitz en freeze op variant swaps",
-            owner: "Production Manager"
-          },
-          {
-            rootcause: "Forecast bias DACH promo",
-            countermeasure: "Demand review met sales en planner lock",
-            owner: "Demand Planning Lead"
-          }
-        ]
-      },
-      "Unconstrained demand fulfillment": [
-        "Target: 96.5% | Actual: 95.8% | Status: yellow",
-        "Backlog trend: -4.1% vs vorige week",
-        "Constraint removed on line SHV-2"
-      ],
-      "USP-CSP": [
-        "USP adherence: 93.9% | CSP adherence: 95.1% | Status: yellow",
-        "Main deviation: packaging changeover loss",
-        "Recovery plan active for next 2 werkdagen"
-      ],
-      "Safety stock fulfillment": {
-        type: "safety_stock",
-        weeks: FUTURE_WEEKS,
-        percentage: {
-          total: [69, 71, 73, 74, 76, 78, 79, 81, 82, 84, 85, 86, 87],
-          markets: [
-            marketValues("DACH", [65, 67, 69, 70, 72, 74, 75, 77, 78, 80, 81, 82, 83]),
-            marketValues("Benelux", [72, 73, 74, 75, 77, 78, 79, 81, 82, 83, 84, 85, 86]),
-            marketValues("UK&I", [68, 69, 71, 72, 74, 76, 77, 79, 80, 81, 82, 83, 84]),
-            marketValues("France", [70, 71, 72, 73, 75, 77, 78, 80, 81, 82, 83, 84, 85])
-          ]
-        },
-        dfs: {
-          total: [26, 27, 28, 29, 30, 30, 31, 32, 33, 34, 35, 35, 36],
-          markets: [
-            marketValues("DACH", [22, 23, 24, 25, 26, 26, 27, 28, 29, 30, 30, 31, 32]),
-            marketValues("Benelux", [28, 28, 29, 30, 30, 31, 32, 33, 33, 34, 35, 35, 36]),
-            marketValues("UK&I", [24, 25, 26, 27, 28, 29, 29, 30, 31, 32, 33, 33, 34]),
-            marketValues("France", [25, 26, 27, 28, 29, 29, 30, 31, 32, 33, 33, 34, 35])
-          ]
-        }
-      },
-      UVAP: [
-        "UVAP score: 91.4% | Target: 92.0% | Status: yellow",
-        "Main impact: promotional mix variance",
-        "Forecast correction in S&OP cycle"
-      ],
-      OTTR: [
-        "On Time To Request: 94.5% | Target: 95.0% | Status: yellow",
-        "Transit delays from 3PL in UK",
-        "Action: alternate lane trial gestart"
-      ]
-    },
-    highlights: [
-      "Backlog reduction op premium series.",
-      "Line SHV-2 output +6% vs vorige week."
-    ],
-    lowlights: [
-      "Safety stock onder norm voor blades.",
-      "Lagere fillrate in DACH."
-    ],
-    help: [
-      "Besluit nodig over extra air freight budget.",
-      "Ondersteuning bij vendor escalation voor motor assemblies."
-    ]
-  },
-  "Power toothbrush": {
-    week: "Week 6 - 2026",
-    kpis: {
-      Fillrate: {
-        type: "fillrate",
-        weeks: HISTORY_WEEKS,
-        total: [94.0, 94.3, 94.7, 94.9, 95.1, 95.0, 95.3, 95.6, 95.2, 94.8, 95.4, 95.7, 95.1],
-        markets: [
-          marketValues("DACH", [93.5, 93.8, 94.2, 94.6, 94.8, 94.6, 95.0, 95.3, 94.9, 94.5, 95.1, 95.5, 94.8]),
-          marketValues("Benelux", [94.4, 94.7, 95.0, 95.1, 95.4, 95.3, 95.6, 95.8, 95.5, 95.0, 95.7, 96.0, 95.4]),
-          marketValues("UK&I", [93.8, 94.0, 94.4, 94.6, 94.9, 94.8, 95.1, 95.5, 95.0, 94.6, 95.3, 95.6, 95.0]),
-          marketValues("France", [94.2, 94.5, 94.9, 95.0, 95.2, 95.1, 95.4, 95.7, 95.4, 95.0, 95.6, 95.9, 95.3])
-        ],
-        actions: [
-          {
-            rootcause: "Incidentele vertraging spare heads",
-            countermeasure: "Safety batch op reserve-assemblage gepland",
-            owner: "Planning Lead"
-          },
-          {
-            rootcause: "Carrier variability UK",
-            countermeasure: "Slot shift naar performance carrier",
-            owner: "Logistics Manager"
-          }
-        ]
-      },
-      "Unconstrained demand fulfillment": [
-        "Target: 97.0% | Actual: 96.6% | Status: yellow",
-        "Holiday uplift veroorzaakt korte dip",
-        "Recovery expected binnen 1 week"
-      ],
-      "USP-CSP": [
-        "USP adherence: 96.8% | CSP adherence: 97.2% | Status: green",
-        "Stable planning discipline op alle lijnen",
-        "Minor exception in spare heads"
-      ],
-      "Safety stock fulfillment": {
-        type: "safety_stock",
-        weeks: FUTURE_WEEKS,
-        percentage: {
-          total: [82, 83, 84, 84, 85, 86, 86, 87, 88, 88, 89, 90, 90],
-          markets: [
-            marketValues("DACH", [79, 80, 81, 82, 83, 84, 84, 85, 86, 86, 87, 88, 88]),
-            marketValues("Benelux", [84, 85, 85, 86, 86, 87, 88, 88, 89, 89, 90, 91, 91]),
-            marketValues("UK&I", [80, 81, 82, 83, 83, 84, 85, 85, 86, 87, 87, 88, 89]),
-            marketValues("France", [82, 83, 84, 84, 85, 86, 86, 87, 88, 88, 89, 90, 90])
-          ]
-        },
-        dfs: {
-          total: [34, 34, 35, 35, 36, 36, 37, 37, 38, 38, 39, 39, 40],
-          markets: [
-            marketValues("DACH", [31, 31, 32, 33, 33, 34, 34, 35, 35, 36, 36, 37, 37]),
-            marketValues("Benelux", [36, 36, 37, 37, 38, 38, 39, 39, 40, 40, 41, 41, 42]),
-            marketValues("UK&I", [32, 33, 33, 34, 34, 35, 35, 36, 36, 37, 37, 38, 39]),
-            marketValues("France", [33, 34, 34, 35, 35, 36, 36, 37, 37, 38, 38, 39, 39])
-          ]
-        }
-      },
-      UVAP: [
-        "UVAP score: 92.7% | Target: 92.0% | Status: green",
-        "Mix verbetering in replacement heads",
-        "Positive margin trend"
-      ],
-      OTTR: [
-        "On Time To Request: 95.7% | Target: 95.0% | Status: green",
-        "Carrier performance improved +1.4%",
-        "No expedited transport needed"
-      ]
-    },
-    highlights: [
-      "Best fillrate score in laatste 8 weken.",
-      "OTTR boven target ondanks volume uplift."
-    ],
-    lowlights: [
-      "Demand fulfillment licht onder target.",
-      "Incidentele vertraging voor spare heads."
-    ],
-    help: [
-      "Validatie nodig op demand signal APAC.",
-      "Input gevraagd voor Q2 promotion phasing."
-    ]
-  },
-  IPL: {
-    week: "Week 6 - 2026",
-    kpis: {
-      Fillrate: {
-        type: "fillrate",
-        weeks: HISTORY_WEEKS,
-        total: [93.1, 92.9, 92.2, 91.8, 91.4, 90.8, 91.3, 91.9, 92.1, 92.5, 92.0, 91.7, 91.4],
-        markets: [
-          marketValues("DACH", [92.7, 92.4, 91.8, 91.2, 90.8, 90.1, 90.9, 91.3, 91.6, 92.0, 91.4, 91.0, 90.7]),
-          marketValues("Benelux", [93.3, 93.0, 92.4, 92.0, 91.6, 91.0, 91.5, 92.1, 92.4, 92.7, 92.2, 91.9, 91.6]),
-          marketValues("UK&I", [92.9, 92.6, 92.0, 91.5, 91.0, 90.5, 91.0, 91.6, 91.8, 92.2, 91.8, 91.4, 91.1]),
-          marketValues("France", [93.4, 93.1, 92.6, 92.1, 91.8, 91.2, 91.7, 92.3, 92.5, 92.9, 92.4, 92.0, 91.8])
-        ],
-        actions: [
-          {
-            rootcause: "Constrained PCB supply",
-            countermeasure: "Alternate supplier vrijgave versneld",
-            owner: "Commodity Manager"
-          },
-          {
-            rootcause: "Lagere test-yield week 3-4",
-            countermeasure: "Process window update op final test",
-            owner: "Quality Engineer"
-          },
-          {
-            rootcause: "Late final packing handoff",
-            countermeasure: "Dagelijkse OTTR war-room met operations",
-            owner: "Operations Lead"
-          }
-        ]
-      },
-      "Unconstrained demand fulfillment": [
-        "Target: 96.0% | Actual: 94.8% | Status: red",
-        "Backlog trend: +5.3% vs vorige week",
-        "Recovery capacity gepland in week 8"
-      ],
-      "USP-CSP": [
-        "USP adherence: 92.4% | CSP adherence: 93.0% | Status: yellow",
-        "Main variance from supplier takt time",
-        "Stabilization plan in uitvoering"
-      ],
-      "Safety stock fulfillment": {
-        type: "safety_stock",
-        weeks: FUTURE_WEEKS,
-        percentage: {
-          total: [62, 64, 66, 67, 69, 70, 72, 73, 75, 76, 78, 79, 81],
-          markets: [
-            marketValues("DACH", [58, 60, 62, 63, 65, 66, 68, 69, 71, 72, 74, 75, 77]),
-            marketValues("Benelux", [64, 66, 67, 68, 70, 71, 73, 74, 76, 77, 79, 80, 82]),
-            marketValues("UK&I", [60, 62, 64, 65, 67, 68, 70, 71, 73, 74, 76, 77, 79]),
-            marketValues("France", [63, 65, 66, 67, 69, 70, 72, 73, 75, 76, 78, 79, 81])
-          ]
-        },
-        dfs: {
-          total: [18, 19, 20, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29],
-          markets: [
-            marketValues("DACH", [15, 16, 17, 17, 18, 19, 20, 21, 22, 23, 24, 24, 25]),
-            marketValues("Benelux", [19, 20, 21, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]),
-            marketValues("UK&I", [17, 18, 18, 19, 20, 21, 22, 23, 24, 25, 25, 26, 27]),
-            marketValues("France", [18, 19, 20, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29])
-          ]
-        }
-      },
-      UVAP: [
-        "UVAP score: 89.8% | Target: 91.5% | Status: red",
-        "Unfavorable mix due to constrained premium variants",
-        "Price/mix herstel verwacht in week 9"
-      ],
-      OTTR: [
-        "On Time To Request: 93.2% | Target: 95.0% | Status: red",
-        "Late handoff in final packing step",
-        "Cross-functional OTTR taskforce gestart"
-      ]
-    },
-    highlights: [
-      "Supplier takt time trend verbetert sinds maandag.",
-      "Priority allocation beperkt customer escalations."
-    ],
-    lowlights: [
-      "Fillrate en OTTR onder target.",
-      "Hoge druk op safety stock policies."
-    ],
-    help: [
-      "Snelle besluitvorming nodig op alternate PCB supplier.",
-      "Extra planning support gevraagd voor week 8 ramp-up."
-    ]
-  }
+const appState = {
+  scopeType: "stream",
+  selectedScope: null,
+  rows: [],
+  parsedRows: [],
+  parseErrors: [],
+  supabaseUrl: localStorage.getItem("supabase_url") || "",
+  supabaseAnonKey: localStorage.getItem("supabase_anon_key") || "",
+  supabaseClient: null
 };
 
 const streamList = document.getElementById("streamList");
+const listTitle = document.getElementById("listTitle");
+const streamScopeBtn = document.getElementById("streamScopeBtn");
+const marketScopeBtn = document.getElementById("marketScopeBtn");
 const currentStream = document.getElementById("currentStream");
 const currentWeek = document.getElementById("currentWeek");
 const emptyState = document.getElementById("emptyState");
@@ -280,6 +44,55 @@ const kpiContainer = document.getElementById("kpiContainer");
 const highlightsList = document.getElementById("highlightsList");
 const lowlightsList = document.getElementById("lowlightsList");
 const helpList = document.getElementById("helpList");
+
+const uploadModal = document.getElementById("uploadModal");
+const openUploadBtn = document.getElementById("openUploadBtn");
+const closeUploadBtn = document.getElementById("closeUploadBtn");
+const stepBadge = document.getElementById("stepBadge");
+const uploadStep1 = document.getElementById("uploadStep1");
+const uploadStep2 = document.getElementById("uploadStep2");
+const uploadStep3 = document.getElementById("uploadStep3");
+const supabaseUrlInput = document.getElementById("supabaseUrlInput");
+const supabaseAnonKeyInput = document.getElementById("supabaseAnonKeyInput");
+const saveSupabaseBtn = document.getElementById("saveSupabaseBtn");
+const excelInput = document.getElementById("excelInput");
+const validationSummary = document.getElementById("validationSummary");
+const previewContainer = document.getElementById("previewContainer");
+const toStep3Btn = document.getElementById("toStep3Btn");
+const backToStep1Btn = document.getElementById("backToStep1Btn");
+const backToStep2Btn = document.getElementById("backToStep2Btn");
+const uploadToDbBtn = document.getElementById("uploadToDbBtn");
+const uploadReadyText = document.getElementById("uploadReadyText");
+const uploadResult = document.getElementById("uploadResult");
+
+function sanitize(value) {
+  return String(value ?? "").replace(/[&<>"']/g, (char) => {
+    const chars = { "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" };
+    return chars[char];
+  });
+}
+
+function normalizeHeader(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ");
+}
+
+function parseWeek(weekLabel) {
+  const match = /^(\d{4})\.(\d{2})$/.exec(String(weekLabel || "").trim());
+  if (!match) return null;
+  return {
+    year: Number(match[1]),
+    week: Number(match[2]),
+    sortKey: Number(match[1]) * 100 + Number(match[2])
+  };
+}
+
+function formatPercent(value) {
+  if (!Number.isFinite(value)) return "-";
+  return `${Number(value).toFixed(1)}%`;
+}
 
 function getStatusClass(line) {
   if (line.includes("Status: green")) return "green";
@@ -299,14 +112,7 @@ function getOverallKpiStatus(details) {
 
   if (details.type === "fillrate") {
     const values = details.total || [];
-    if (values.some((value) => value < 93)) return "red";
-    return "green";
-  }
-
-  if (details.type === "safety_stock") {
-    const values = details.percentage?.total || [];
-    if (values.some((value) => value < 70)) return "red";
-    if (values.some((value) => value < 80)) return "yellow";
+    if (values.some((value) => Number.isFinite(value) && value < 93)) return "red";
     return "green";
   }
 
@@ -329,11 +135,7 @@ function renderList(targetElement, items) {
   });
 }
 
-function formatPercent(value) {
-  return `${Number(value).toFixed(1)}%`;
-}
-
-function createMatrixTable(weeks, totalValues, markets, options = {}) {
+function createMatrixTable(weeks, totalValues, rows, options = {}) {
   const {
     firstColumnLabel = "Markt",
     formatValue = (value) => String(value),
@@ -349,18 +151,20 @@ function createMatrixTable(weeks, totalValues, markets, options = {}) {
   const firstHead = document.createElement("th");
   firstHead.textContent = firstColumnLabel;
   headRow.appendChild(firstHead);
+
   weeks.forEach((week) => {
     const th = document.createElement("th");
     th.textContent = week;
     headRow.appendChild(th);
   });
+
   thead.appendChild(headRow);
   table.appendChild(thead);
 
   const tbody = document.createElement("tbody");
-  const rows = [{ name: rowNameTotal, values: totalValues, isTotal: true }, ...markets];
+  const allRows = [{ name: rowNameTotal, values: totalValues, isTotal: true }, ...rows];
 
-  rows.forEach((row) => {
+  allRows.forEach((row) => {
     const tr = document.createElement("tr");
     if (row.isTotal) tr.className = "is-total-row";
 
@@ -372,8 +176,8 @@ function createMatrixTable(weeks, totalValues, markets, options = {}) {
     row.values.forEach((value) => {
       const td = document.createElement("td");
       td.textContent = formatValue(value);
-      const className = getValueClass(value);
-      if (className) td.classList.add(className);
+      const valueClass = getValueClass(value);
+      if (valueClass) td.classList.add(valueClass);
       tr.appendChild(td);
     });
 
@@ -384,13 +188,144 @@ function createMatrixTable(weeks, totalValues, markets, options = {}) {
   return table;
 }
 
-function renderFillrateContent(contentEl, details) {
+function getRowsForSelection() {
+  if (!appState.selectedScope) return [];
+  if (appState.scopeType === "stream") {
+    return appState.rows.filter((row) => row.value_stream === appState.selectedScope);
+  }
+  return appState.rows.filter((row) => row.market === appState.selectedScope);
+}
+
+function buildFillrateDetails(rows, scopeType) {
+  const breakdownKey = scopeType === "stream" ? "market" : "value_stream";
+  const weekMap = new Map();
+
+  rows.forEach((row) => {
+    const weekInfo = parseWeek(row.week_label);
+    if (!weekInfo) return;
+    if (!weekMap.has(row.week_label)) {
+      weekMap.set(row.week_label, { label: row.week_label, sortKey: weekInfo.sortKey });
+    }
+  });
+
+  const orderedWeeks = [...weekMap.values()]
+    .sort((a, b) => a.sortKey - b.sortKey)
+    .slice(-13)
+    .map((item) => item.label);
+
+  const totalValues = orderedWeeks.map((weekLabel) => {
+    const weekRows = rows.filter((row) => row.week_label === weekLabel);
+    const requested = weekRows.reduce((sum, row) => sum + Number(row.requested_quantity || 0), 0);
+    const delivered = weekRows.reduce((sum, row) => sum + Number(row.delivered || 0), 0);
+    if (requested <= 0) return NaN;
+    return (delivered / requested) * 100;
+  });
+
+  const breakdownItems = [...new Set(rows.map((row) => row[breakdownKey]))]
+    .filter(Boolean)
+    .sort((a, b) => a.localeCompare(b));
+
+  const breakdownRows = breakdownItems.map((itemName) => {
+    const values = orderedWeeks.map((weekLabel) => {
+      const weekRows = rows.filter((row) => row.week_label === weekLabel && row[breakdownKey] === itemName);
+      const requested = weekRows.reduce((sum, row) => sum + Number(row.requested_quantity || 0), 0);
+      const delivered = weekRows.reduce((sum, row) => sum + Number(row.delivered || 0), 0);
+      if (requested <= 0) return NaN;
+      return (delivered / requested) * 100;
+    });
+    return { name: itemName, values };
+  });
+
+  const lowestPoint = breakdownRows
+    .map((row) => ({ name: row.name, min: Math.min(...row.values.filter(Number.isFinite)) }))
+    .filter((item) => Number.isFinite(item.min))
+    .sort((a, b) => a.min - b.min)[0];
+
+  const actionRows = [
+    {
+      rootcause: "Vraag/supply mismatch op week met laagste fillrate",
+      countermeasure: "Dagelijkse alignment met planning en supply",
+      owner: "Supply planner"
+    },
+    {
+      rootcause: "Late shipments op grootste impact segment",
+      countermeasure: `Gerichte review voor ${lowestPoint?.name || "laagste segment"} en escalatie met logistics`,
+      owner: "Logistics lead"
+    }
+  ];
+
+  return {
+    type: "fillrate",
+    weeks: orderedWeeks,
+    total: totalValues,
+    markets: breakdownRows,
+    actions: actionRows
+  };
+}
+
+function buildKpiModel(rows, scopeType) {
+  const fillrate = buildFillrateDetails(rows, scopeType);
+  const scopeName = scopeType === "stream" ? "value stream" : "markt";
+  return {
+    Fillrate: fillrate,
+    "Unconstrained demand fulfillment": [
+      `Data status: gevuld via Fillrate bron voor ${scopeName}.`,
+      "Volledige UNCONSTRAINED berekening volgt na extra datastromen."
+    ],
+    "USP-CSP": [
+      "Nog niet gekoppeld: upload van USP/CSP brondata nodig.",
+      "Dashboardstructuur staat klaar voor koppeling."
+    ],
+    "Safety stock fulfillment": [
+      "Nog niet gekoppeld: upload van safety stock brondata nodig.",
+      "Toekomstige % en DFS tabellen blijven ondersteund in deze layout."
+    ],
+    UVAP: [
+      "Nog niet gekoppeld: UVAP brondata nodig.",
+      "KPI placeholder blijft zichtbaar voor dashboardvolledigheid."
+    ],
+    OTTR: [
+      "Nog niet gekoppeld: OTTR brondata nodig.",
+      "Structuur gereed voor volgende data-upload."
+    ]
+  };
+}
+
+function buildContextNotes(rows, scopeType, scopeName) {
+  const fillrate = buildFillrateDetails(rows, scopeType);
+  const latest = fillrate.total[fillrate.total.length - 1];
+  const best = fillrate.markets
+    .map((row) => ({ name: row.name, value: row.values[row.values.length - 1] }))
+    .filter((row) => Number.isFinite(row.value))
+    .sort((a, b) => b.value - a.value)[0];
+  const worst = fillrate.markets
+    .map((row) => ({ name: row.name, value: row.values[row.values.length - 1] }))
+    .filter((row) => Number.isFinite(row.value))
+    .sort((a, b) => a.value - b.value)[0];
+
+  return {
+    highlights: [
+      `${scopeName}: laatste totale fillrate ${formatPercent(latest)}.`,
+      best ? `Beste segment deze week: ${best.name} (${formatPercent(best.value)}).` : "Nog geen segmentvergelijking beschikbaar."
+    ],
+    lowlights: [
+      worst ? `Laagste segment deze week: ${worst.name} (${formatPercent(worst.value)}).` : "Nog onvoldoende detaildata.",
+      "Overige KPI's wachten nog op aanvullende databronnen."
+    ],
+    help: [
+      "Upload ook Safety Stock / OTTR bronbestanden voor volledig dashboard.",
+      "Controleer wekelijks dat het Excel-format exact gelijk blijft."
+    ]
+  };
+}
+
+function renderFillrateContent(contentEl, details, scopeType) {
   const chartWrap = document.createElement("div");
   chartWrap.className = "fillrate-chart";
 
   const chartTitle = document.createElement("p");
   chartTitle.className = "kpi-section-title";
-  chartTitle.textContent = "Totale fillrate - afgelopen 13 weken";
+  chartTitle.textContent = "Totale fillrate - laatste 13 weken";
   chartWrap.appendChild(chartTitle);
 
   const bars = document.createElement("div");
@@ -401,7 +336,7 @@ function renderFillrateContent(contentEl, details) {
 
     const bar = document.createElement("div");
     bar.className = `fillrate-bar ${value >= 93 ? "ok" : "risk"}`;
-    bar.style.height = `${Math.max(18, (value - 85) * 8)}px`;
+    bar.style.height = `${Math.max(18, (Number.isFinite(value) ? value : 85) - 85) * 8}px`;
     bar.title = `${details.weeks[index]}: ${formatPercent(value)}`;
     barItem.appendChild(bar);
 
@@ -409,7 +344,6 @@ function renderFillrateContent(contentEl, details) {
     label.className = "fillrate-bar-label";
     label.textContent = details.weeks[index];
     barItem.appendChild(label);
-
     bars.appendChild(barItem);
   });
   chartWrap.appendChild(bars);
@@ -418,12 +352,18 @@ function renderFillrateContent(contentEl, details) {
   tableWrap.className = "kpi-table-wrap";
   const tableTitle = document.createElement("p");
   tableTitle.className = "kpi-section-title";
-  tableTitle.textContent = "Fillrate per markt en totaal";
+  tableTitle.textContent = scopeType === "stream"
+    ? "Fillrate per markt en totaal"
+    : "Fillrate per value stream en totaal";
   tableWrap.appendChild(tableTitle);
   tableWrap.appendChild(
     createMatrixTable(details.weeks, details.total, details.markets, {
+      firstColumnLabel: scopeType === "stream" ? "Markt" : "Value stream",
       formatValue: formatPercent,
-      getValueClass: (value) => (value >= 93 ? "value-good" : "value-bad")
+      getValueClass: (value) => {
+        if (!Number.isFinite(value)) return "";
+        return value >= 93 ? "value-good" : "value-bad";
+      }
     })
   );
 
@@ -449,9 +389,9 @@ function renderFillrateContent(contentEl, details) {
         .map(
           (item) => `
             <tr>
-              <td>${item.rootcause}</td>
-              <td>${item.countermeasure}</td>
-              <td>${item.owner}</td>
+              <td>${sanitize(item.rootcause)}</td>
+              <td>${sanitize(item.countermeasure)}</td>
+              <td>${sanitize(item.owner)}</td>
             </tr>
           `
         )
@@ -465,84 +405,18 @@ function renderFillrateContent(contentEl, details) {
   contentEl.appendChild(actionWrap);
 }
 
-function renderSafetyStockContent(contentEl, details) {
-  let mode = "percentage";
-
-  const controls = document.createElement("div");
-  controls.className = "kpi-controls-row";
-
-  const title = document.createElement("p");
-  title.className = "kpi-section-title";
-  title.textContent = "Safety stock planning - komende 13 weken";
-  controls.appendChild(title);
-
-  const rightControls = document.createElement("div");
-  rightControls.className = "kpi-controls";
-
-  const modeLabel = document.createElement("span");
-  modeLabel.className = "mode-label";
-  modeLabel.textContent = "Weergave: % gevuld";
-  rightControls.appendChild(modeLabel);
-
-  const toggleBtn = document.createElement("button");
-  toggleBtn.type = "button";
-  toggleBtn.className = "mode-toggle-btn";
-  toggleBtn.textContent = "DFS";
-  rightControls.appendChild(toggleBtn);
-
-  controls.appendChild(rightControls);
-  contentEl.appendChild(controls);
-
-  const tableHost = document.createElement("div");
-  tableHost.className = "kpi-table-wrap";
-  contentEl.appendChild(tableHost);
-
-  function renderModeTable() {
-    tableHost.innerHTML = "";
-    if (mode === "percentage") {
-      modeLabel.textContent = "Weergave: % gevuld";
-      tableHost.appendChild(
-        createMatrixTable(details.weeks, details.percentage.total, details.percentage.markets, {
-          formatValue: (value) => `${value}%`,
-          getValueClass: (value) => {
-            if (value < 70) return "value-bad";
-            if (value < 80) return "value-warn";
-            return "value-good";
-          }
-        })
-      );
-    } else {
-      modeLabel.textContent = "Weergave: days future sales";
-      tableHost.appendChild(
-        createMatrixTable(details.weeks, details.dfs.total, details.dfs.markets, {
-          formatValue: (value) => `${value}d`
-        })
-      );
-    }
-  }
-
-  toggleBtn.addEventListener("click", () => {
-    mode = mode === "percentage" ? "dfs" : "percentage";
-    toggleBtn.classList.toggle("active", mode === "dfs");
-    renderModeTable();
-  });
-
-  renderModeTable();
-}
-
-function renderKpis(streamName) {
-  const streamData = dashboardData[streamName];
+function renderKpis(scopeType, scopeName, rows) {
+  const kpiData = buildKpiModel(rows, scopeType);
   kpiContainer.innerHTML = "";
 
-  Object.entries(streamData.kpis).forEach(([groupName, details]) => {
+  Object.entries(kpiData).forEach(([groupName, details]) => {
     const detailsEl = document.createElement("details");
     detailsEl.className = "kpi-group";
     const overallStatus = getOverallKpiStatus(details);
-    detailsEl.dataset.status = overallStatus;
 
     const summaryEl = document.createElement("summary");
     summaryEl.innerHTML = `
-      <span class="kpi-title">${groupName}</span>
+      <span class="kpi-title">${sanitize(groupName)}</span>
       <span class="kpi-summary-meta">
         <span class="kpi-status-pill ${overallStatus}">
           <span class="kpi-status-dot"></span>
@@ -556,10 +430,9 @@ function renderKpis(streamName) {
     const contentEl = document.createElement("div");
     contentEl.className = "kpi-content";
 
-    const listEl = document.createElement("ul");
-    listEl.className = "kpi-list";
-
     if (Array.isArray(details)) {
+      const listEl = document.createElement("ul");
+      listEl.className = "kpi-list";
       details.forEach((line) => {
         const li = document.createElement("li");
         const statusClass = getStatusClass(line);
@@ -575,42 +448,352 @@ function renderKpis(streamName) {
       });
       contentEl.appendChild(listEl);
     } else if (details.type === "fillrate") {
-      renderFillrateContent(contentEl, details);
-    } else if (details.type === "safety_stock") {
-      renderSafetyStockContent(contentEl, details);
+      renderFillrateContent(contentEl, details, scopeType);
     }
-    detailsEl.appendChild(contentEl);
 
+    detailsEl.appendChild(contentEl);
     kpiContainer.appendChild(detailsEl);
   });
+
+  const context = buildContextNotes(rows, scopeType, scopeName);
+  renderList(highlightsList, context.highlights);
+  renderList(lowlightsList, context.lowlights);
+  renderList(helpList, context.help);
 }
 
-function selectStream(streamName, buttonEl) {
-  const streamData = dashboardData[streamName];
-  currentStream.textContent = `Value stream: ${streamName}`;
-  currentWeek.textContent = `Update: ${streamData.week}`;
+function getScopeItems() {
+  if (appState.scopeType === "stream") {
+    const dynamic = [...new Set(appState.rows.map((row) => row.value_stream))].filter(Boolean);
+    return dynamic.length ? dynamic.sort((a, b) => a.localeCompare(b)) : DEFAULT_STREAMS;
+  }
+  const dynamic = [...new Set(appState.rows.map((row) => row.market))].filter(Boolean);
+  return dynamic.length ? dynamic.sort((a, b) => a.localeCompare(b)) : DEFAULT_MARKETS;
+}
 
-  emptyState.classList.add("hidden");
-  dashboardContent.classList.remove("hidden");
+function updateHeader(rows) {
+  const prefix = appState.scopeType === "stream" ? "Value stream" : "Markt";
+  currentStream.textContent = `${prefix}: ${appState.selectedScope || "-"}`;
 
-  document.querySelectorAll(".stream-btn").forEach((btn) => {
-    btn.classList.remove("active");
-  });
+  const latestWeek = rows
+    .map((row) => parseWeek(row.week_label))
+    .filter(Boolean)
+    .sort((a, b) => b.sortKey - a.sortKey)[0];
+  currentWeek.textContent = `Update: ${latestWeek ? `${latestWeek.year}.${String(latestWeek.week).padStart(2, "0")}` : "-"}`;
+}
+
+function selectScope(scopeName, buttonEl) {
+  appState.selectedScope = scopeName;
+  document.querySelectorAll(".stream-btn").forEach((btn) => btn.classList.remove("active"));
   buttonEl.classList.add("active");
 
-  renderKpis(streamName);
-  renderList(highlightsList, streamData.highlights);
-  renderList(lowlightsList, streamData.lowlights);
-  renderList(helpList, streamData.help);
+  const rows = getRowsForSelection();
+  updateHeader(rows);
+  emptyState.classList.add("hidden");
+  dashboardContent.classList.remove("hidden");
+  renderKpis(appState.scopeType, scopeName, rows);
 }
 
-Object.keys(dashboardData).forEach((streamName) => {
-  const li = document.createElement("li");
-  const btn = document.createElement("button");
-  btn.className = "stream-btn";
-  btn.type = "button";
-  btn.textContent = streamName;
-  btn.addEventListener("click", () => selectStream(streamName, btn));
-  li.appendChild(btn);
-  streamList.appendChild(li);
-});
+function renderScopeList() {
+  streamList.innerHTML = "";
+  listTitle.textContent = appState.scopeType === "stream" ? "Value streams" : "Markten";
+
+  const items = getScopeItems();
+  if (!items.length) {
+    emptyState.classList.remove("hidden");
+    dashboardContent.classList.add("hidden");
+    return;
+  }
+
+  if (!appState.selectedScope || !items.includes(appState.selectedScope)) {
+    appState.selectedScope = items[0];
+  }
+
+  items.forEach((name) => {
+    const li = document.createElement("li");
+    const btn = document.createElement("button");
+    btn.className = "stream-btn";
+    btn.type = "button";
+    btn.textContent = name;
+    if (name === appState.selectedScope) btn.classList.add("active");
+    btn.addEventListener("click", () => selectScope(name, btn));
+    li.appendChild(btn);
+    streamList.appendChild(li);
+  });
+
+  const selectedButton = streamList.querySelector(".stream-btn.active");
+  if (selectedButton) {
+    selectScope(appState.selectedScope, selectedButton);
+  }
+}
+
+function setScopeType(scopeType) {
+  appState.scopeType = scopeType;
+  streamScopeBtn.classList.toggle("active", scopeType === "stream");
+  marketScopeBtn.classList.toggle("active", scopeType === "market");
+  appState.selectedScope = null;
+  renderScopeList();
+}
+
+function connectSupabase() {
+  if (!appState.supabaseUrl || !appState.supabaseAnonKey || !window.supabase?.createClient) {
+    appState.supabaseClient = null;
+    return false;
+  }
+  appState.supabaseClient = window.supabase.createClient(appState.supabaseUrl, appState.supabaseAnonKey);
+  return true;
+}
+
+async function loadFillrateRows() {
+  if (!connectSupabase()) {
+    appState.rows = [];
+    renderScopeList();
+    return;
+  }
+
+  const { data, error } = await appState.supabaseClient
+    .from("fillrate_rows")
+    .select("*")
+    .order("week_label", { ascending: true })
+    .limit(50000);
+
+  if (error) {
+    console.error(error);
+    alert(`Supabase fout bij laden: ${error.message}`);
+    return;
+  }
+
+  appState.rows = data || [];
+  renderScopeList();
+}
+
+function goToUploadStep(step) {
+  uploadStep1.classList.toggle("hidden", step !== 1);
+  uploadStep2.classList.toggle("hidden", step !== 2);
+  uploadStep3.classList.toggle("hidden", step !== 3);
+  stepBadge.textContent = `Stap ${step} van 3`;
+}
+
+function openUploadModal() {
+  supabaseUrlInput.value = appState.supabaseUrl;
+  supabaseAnonKeyInput.value = appState.supabaseAnonKey;
+  uploadResult.textContent = "";
+  validationSummary.textContent = "";
+  previewContainer.innerHTML = "";
+  toStep3Btn.disabled = true;
+  uploadReadyText.textContent = "Controle afgerond. Klaar om te uploaden naar Supabase.";
+  uploadModal.classList.remove("hidden");
+  goToUploadStep(1);
+}
+
+function parseExcelRows(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const workbook = XLSX.read(event.target.result, { type: "array" });
+        const firstSheetName = workbook.SheetNames[0];
+        const rawRows = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheetName], { defval: "" });
+        resolve(rawRows);
+      } catch (error) {
+        reject(error);
+      }
+    };
+    reader.onerror = reject;
+    reader.readAsArrayBuffer(file);
+  });
+}
+
+function mapAndValidateRows(rawRows) {
+  const mappedRows = [];
+  const errors = [];
+  const previewRows = [];
+
+  rawRows.forEach((row, index) => {
+    const normalized = {};
+    Object.keys(row).forEach((key) => {
+      normalized[normalizeHeader(key)] = row[key];
+    });
+
+    const missingColumns = REQUIRED_COLUMNS.filter(
+      (column) => !(normalizeHeader(column) in normalized)
+    );
+    if (missingColumns.length) {
+      errors.push(`Kolommen ontbreken in Excel: ${missingColumns.join(", ")}`);
+      return;
+    }
+
+    const weekLabel = String(normalized[normalizeHeader("Week")]).trim();
+    if (!parseWeek(weekLabel)) {
+      errors.push(`Rij ${index + 2}: ongeldig weekformaat "${weekLabel}" (verwacht YYYY.WW, bv 2026.06)`);
+      return;
+    }
+
+    const requested = Number(normalized[normalizeHeader("Requested quantity")]);
+    const delivered = Number(normalized[normalizeHeader("Delivered")]);
+    if (!Number.isFinite(requested) || requested <= 0) {
+      errors.push(`Rij ${index + 2}: Requested quantity moet > 0 zijn`);
+      return;
+    }
+    if (!Number.isFinite(delivered) || delivered < 0) {
+      errors.push(`Rij ${index + 2}: Delivered moet >= 0 zijn`);
+      return;
+    }
+
+    const mapped = {
+      value_stream: String(normalized[normalizeHeader("Value stream")]).trim(),
+      market: String(normalized[normalizeHeader("Markt")]).trim(),
+      week_label: weekLabel,
+      pag: String(normalized[normalizeHeader("PAG")]).trim(),
+      mag: String(normalized[normalizeHeader("MAG")]).trim(),
+      ag: String(normalized[normalizeHeader("AG")]).trim(),
+      project: String(normalized[normalizeHeader("Project")]).trim(),
+      requested_quantity: requested,
+      delivered
+    };
+
+    if (!mapped.value_stream || !mapped.market || !mapped.project) {
+      errors.push(`Rij ${index + 2}: verplichte tekstvelden ontbreken`);
+      return;
+    }
+
+    mappedRows.push(mapped);
+    if (previewRows.length < 8) previewRows.push(mapped);
+  });
+
+  return { mappedRows, errors, previewRows };
+}
+
+function renderPreviewRows(rows) {
+  if (!rows.length) {
+    previewContainer.innerHTML = "";
+    return;
+  }
+
+  previewContainer.innerHTML = `
+    <table class="kpi-matrix-table">
+      <thead>
+        <tr>
+          <th>Value stream</th>
+          <th>Markt</th>
+          <th>Week</th>
+          <th>Project</th>
+          <th>Requested</th>
+          <th>Delivered</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows
+          .map(
+            (row) => `
+              <tr>
+                <td>${sanitize(row.value_stream)}</td>
+                <td>${sanitize(row.market)}</td>
+                <td>${sanitize(row.week_label)}</td>
+                <td>${sanitize(row.project)}</td>
+                <td>${sanitize(row.requested_quantity)}</td>
+                <td>${sanitize(row.delivered)}</td>
+              </tr>
+            `
+          )
+          .join("")}
+      </tbody>
+    </table>
+  `;
+}
+
+async function uploadRowsToSupabase(rows) {
+  if (!connectSupabase()) throw new Error("Supabase configuratie ontbreekt.");
+  const chunkSize = 500;
+  for (let i = 0; i < rows.length; i += chunkSize) {
+    const chunk = rows.slice(i, i + chunkSize);
+    const { error } = await appState.supabaseClient
+      .from("fillrate_rows")
+      .upsert(chunk, {
+        onConflict: "value_stream,market,week_label,pag,mag,ag,project"
+      });
+    if (error) throw error;
+  }
+}
+
+function setupUploadFlow() {
+  openUploadBtn.addEventListener("click", openUploadModal);
+  closeUploadBtn.addEventListener("click", () => uploadModal.classList.add("hidden"));
+
+  saveSupabaseBtn.addEventListener("click", async () => {
+    appState.supabaseUrl = supabaseUrlInput.value.trim();
+    appState.supabaseAnonKey = supabaseAnonKeyInput.value.trim();
+    localStorage.setItem("supabase_url", appState.supabaseUrl);
+    localStorage.setItem("supabase_anon_key", appState.supabaseAnonKey);
+    goToUploadStep(2);
+    await loadFillrateRows();
+  });
+
+  excelInput.addEventListener("change", async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const rawRows = await parseExcelRows(file);
+      const { mappedRows, errors, previewRows } = mapAndValidateRows(rawRows);
+      appState.parsedRows = mappedRows;
+      appState.parseErrors = errors;
+
+      if (errors.length) {
+        validationSummary.textContent = `Validatiefouten (${errors.length}): ${errors.slice(0, 4).join(" | ")}`;
+        validationSummary.className = "validation-summary error";
+        toStep3Btn.disabled = true;
+      } else {
+        validationSummary.textContent = `Validatie succesvol: ${mappedRows.length} regels klaar voor upload.`;
+        validationSummary.className = "validation-summary success";
+        toStep3Btn.disabled = mappedRows.length === 0;
+      }
+
+      renderPreviewRows(previewRows);
+      uploadReadyText.textContent = `${mappedRows.length} regels klaar voor upload naar Supabase.`;
+      uploadResult.textContent = "";
+    } catch (error) {
+      validationSummary.textContent = `Kon Excel niet verwerken: ${error.message}`;
+      validationSummary.className = "validation-summary error";
+      toStep3Btn.disabled = true;
+    }
+  });
+
+  backToStep1Btn.addEventListener("click", () => goToUploadStep(1));
+  toStep3Btn.addEventListener("click", () => goToUploadStep(3));
+  backToStep2Btn.addEventListener("click", () => goToUploadStep(2));
+
+  uploadToDbBtn.addEventListener("click", async () => {
+    if (!appState.parsedRows.length) return;
+    uploadToDbBtn.disabled = true;
+    uploadResult.textContent = "Upload bezig...";
+    uploadResult.className = "upload-result";
+
+    try {
+      await uploadRowsToSupabase(appState.parsedRows);
+      await loadFillrateRows();
+      uploadResult.textContent = `Upload succesvol: ${appState.parsedRows.length} regels verwerkt.`;
+      uploadResult.className = "upload-result success";
+    } catch (error) {
+      uploadResult.textContent = `Upload mislukt: ${error.message}`;
+      uploadResult.className = "upload-result error";
+    } finally {
+      uploadToDbBtn.disabled = false;
+    }
+  });
+}
+
+function setupScopeButtons() {
+  streamScopeBtn.addEventListener("click", () => setScopeType("stream"));
+  marketScopeBtn.addEventListener("click", () => setScopeType("market"));
+}
+
+async function init() {
+  setupScopeButtons();
+  setupUploadFlow();
+  renderScopeList();
+  if (appState.supabaseUrl && appState.supabaseAnonKey) {
+    await loadFillrateRows();
+  }
+}
+
+init();
