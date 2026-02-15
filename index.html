@@ -24,7 +24,6 @@
     <div class="header-meta">
       <span id="currentStream">Selecteer een value stream</span>
       <span id="currentWeek">Week -</span>
-      <button id="openUploadBtn" class="primary-btn" type="button">Data uploaden</button>
     </div>
   </header>
 
@@ -36,6 +35,9 @@
         <button id="marketScopeBtn" class="scope-btn" type="button">Per markt</button>
       </div>
       <ul id="streamList" class="stream-list"></ul>
+      <div class="panel-footer">
+        <a class="panel-footer-link" href="/upload">Naar data upload</a>
+      </div>
     </aside>
 
     <section class="dashboard-panel">
@@ -64,55 +66,7 @@
     </section>
   </main>
 
-  <div id="uploadModal" class="modal hidden">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h2>Fillrate data upload</h2>
-        <button id="closeUploadBtn" class="ghost-btn" type="button">Sluiten</button>
-      </div>
-
-      <div class="step-indicator">
-        <span id="stepBadge">Stap 1 van 3</span>
-      </div>
-
-      <section id="uploadStep1" class="upload-step">
-        <h3>1. Supabase koppeling</h3>
-        <p>Vul je Supabase gegevens in (anon key is publiek voor frontend gebruik).</p>
-        <label for="supabaseUrlInput">SUPABASE_URL</label>
-        <input id="supabaseUrlInput" type="text" placeholder="https://<project>.supabase.co">
-        <label for="supabaseAnonKeyInput">SUPABASE_ANON_KEY</label>
-        <input id="supabaseAnonKeyInput" type="text" placeholder="eyJ...">
-        <div class="step-actions">
-          <button id="saveSupabaseBtn" class="primary-btn" type="button">Opslaan en verder</button>
-        </div>
-      </section>
-
-      <section id="uploadStep2" class="upload-step hidden">
-        <h3>2. Excel bestand controleren</h3>
-        <p>Upload een .xlsx/.xls bestand met deze kolommen: Value stream, Markt, Week, PAG, MAG, AG, Project, Requested quantity, Delivered.</p>
-        <input id="excelInput" type="file" accept=".xlsx,.xls">
-        <div id="validationSummary" class="validation-summary"></div>
-        <div id="previewContainer" class="preview-container"></div>
-        <div class="step-actions">
-          <button id="backToStep1Btn" class="ghost-btn" type="button">Terug</button>
-          <button id="toStep3Btn" class="primary-btn" type="button" disabled>Verder</button>
-        </div>
-      </section>
-
-      <section id="uploadStep3" class="upload-step hidden">
-        <h3>3. Upload naar database</h3>
-        <p id="uploadReadyText">Controle afgerond. Klaar om te uploaden naar Supabase.</p>
-        <div class="step-actions">
-          <button id="backToStep2Btn" class="ghost-btn" type="button">Terug</button>
-          <button id="uploadToDbBtn" class="primary-btn" type="button">Upload starten</button>
-        </div>
-        <p id="uploadResult" class="upload-result"></p>
-      </section>
-    </div>
-  </div>
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

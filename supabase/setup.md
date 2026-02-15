@@ -21,14 +21,13 @@ In **Project Settings > API**:
 - `SUPABASE_ANON_KEY`
 - (later server-side) `SUPABASE_SERVICE_ROLE_KEY` (niet in frontend gebruiken)
 
-## 4) (Later) frontend koppelen
+## 4) Frontend koppelen en uploaden
 
 De frontend is al gekoppeld op basis van:
 
-1. Open de website
-2. Klik op **Data uploaden**
-3. Vul `SUPABASE_URL` en `SUPABASE_ANON_KEY` in
-4. Upload Excel met kolommen:
+1. Open `https://<jouw-site>/upload`
+2. Vul `SUPABASE_URL` en `SUPABASE_ANON_KEY` in en klik op opslaan
+3. Upload Excel met kolommen:
    - Value stream
    - Markt
    - Week (`YYYY.WW`, bijvoorbeeld `2026.06`)
@@ -38,7 +37,7 @@ De frontend is al gekoppeld op basis van:
    - Project
    - Requested quantity
    - Delivered
-5. Na upload wordt Fillrate direct uit Supabase geladen in:
+4. Na upload wordt Fillrate direct uit Supabase geladen in:
    - view per value stream
    - view per markt
 

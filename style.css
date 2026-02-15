@@ -126,6 +126,11 @@ body {
   box-shadow: var(--shadow-soft);
 }
 
+.stream-panel {
+  display: flex;
+  flex-direction: column;
+}
+
 .stream-panel h2 {
   margin: 0 0 0.6rem;
   font-size: 0.95rem;
@@ -140,6 +145,7 @@ body {
   margin: 0;
   display: grid;
   gap: 0.5rem;
+  flex: 1;
 }
 
 .scope-toggle {
@@ -164,6 +170,23 @@ body {
   background: var(--primary);
   color: #fff;
   border-color: var(--primary);
+}
+
+.panel-footer {
+  margin-top: auto;
+  padding-top: 0.9rem;
+  border-top: 1px solid #e0e8f4;
+}
+
+.panel-footer-link {
+  color: var(--primary);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.panel-footer-link:hover {
+  text-decoration: underline;
 }
 
 .stream-btn {
@@ -552,6 +575,14 @@ details.kpi-group[open] .kpi-content {
   padding: 1rem;
 }
 
+.upload-layout {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.upload-page-panel {
+  max-width: 980px;
+}
+
 .modal-card {
   width: min(920px, 100%);
   max-height: 90vh;
@@ -746,7 +777,4 @@ details.kpi-group[open] .kpi-content {
     align-items: flex-start;
   }
 
-  #openUploadBtn {
-    width: 100%;
-  }
 }

@@ -77,7 +77,7 @@ vercel --prod
 1. Maak een Supabase project.
 2. Run `supabase/schema.sql` in SQL Editor.
 3. Open de website en klik **Data uploaden**.
-4. Vul `SUPABASE_URL` en `SUPABASE_ANON_KEY` in.
+4. Of open direct `/upload` en vul `SUPABASE_URL` en `SUPABASE_ANON_KEY` in.
 5. Upload een Excel-bestand met kolommen:
    - `Value stream`
    - `Markt`
@@ -92,3 +92,9 @@ vercel --prod
 Fillrate wordt berekend als:
 
 `sum(Delivered) / sum(Requested quantity) * 100`
+
+## Hoe de databasekoppeling werkt
+
+- De uploadpagina (`/upload`) slaat `SUPABASE_URL` en `SUPABASE_ANON_KEY` op in browser `localStorage`.
+- De dashboardpagina (`/`) leest deze waardes en laadt daarna `fillrate_rows` uit Supabase.
+- Zonder opgeslagen koppeling zie je een melding met verwijzing naar de uploadpagina.

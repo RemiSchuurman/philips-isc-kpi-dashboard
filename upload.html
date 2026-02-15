@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Philips ISC PH - Data upload</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-left">
+      <div class="brand-strip">
+        <img
+          class="philips-logo"
+          src="https://www.philips.com/c-etc/philips/clientlibs/foundation-general/clientlibs-css-rb2014/images/generic/philips-footer-logo.svg"
+          alt="Philips logo"
+        >
+        <span class="brand-separator" aria-hidden="true"></span>
+        <span class="brand-label">Integrated Supply Chain - Personal Health</span>
+      </div>
+      <h1>Fillrate data upload</h1>
+      <p class="sub-title">Excel import naar Supabase</p>
+    </div>
+    <div class="header-meta">
+      <a class="primary-btn" href="/">Terug naar dashboard</a>
+    </div>
+  </header>
+
+  <main class="layout upload-layout">
+    <section class="dashboard-panel upload-page-panel">
+      <div class="step-indicator">
+        <span id="stepBadge">Stap 1 van 3</span>
+      </div>
+
+      <section id="uploadStep1" class="upload-step">
+        <h3>1. Supabase koppeling</h3>
+        <p>Vul hier de database gegevens in. Deze worden lokaal opgeslagen in je browser.</p>
+        <label for="supabaseUrlInput">SUPABASE_URL</label>
+        <input id="supabaseUrlInput" type="text" placeholder="https://<project>.supabase.co">
+        <label for="supabaseAnonKeyInput">SUPABASE_ANON_KEY</label>
+        <input id="supabaseAnonKeyInput" type="text" placeholder="eyJ...">
+        <div class="step-actions">
+          <button id="saveSupabaseBtn" class="primary-btn" type="button">Opslaan en verder</button>
+        </div>
+      </section>
+
+      <section id="uploadStep2" class="upload-step hidden">
+        <h3>2. Excel bestand controleren</h3>
+        <p>Upload een .xlsx/.xls bestand met de afgesproken kolommen.</p>
+        <input id="excelInput" type="file" accept=".xlsx,.xls">
+        <div id="validationSummary" class="validation-summary"></div>
+        <div id="previewContainer" class="preview-container"></div>
+        <div class="step-actions">
+          <button id="backToStep1Btn" class="ghost-btn" type="button">Terug</button>
+          <button id="toStep3Btn" class="primary-btn" type="button" disabled>Verder</button>
+        </div>
+      </section>
+
+      <section id="uploadStep3" class="upload-step hidden">
+        <h3>3. Upload naar database</h3>
+        <p id="uploadReadyText">Controle afgerond. Klaar om te uploaden naar Supabase.</p>
+        <div class="step-actions">
+          <button id="backToStep2Btn" class="ghost-btn" type="button">Terug</button>
+          <button id="uploadToDbBtn" class="primary-btn" type="button">Upload starten</button>
+        </div>
+        <p id="uploadResult" class="upload-result"></p>
+      </section>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="upload.js"></script>
+</body>
+</html>
