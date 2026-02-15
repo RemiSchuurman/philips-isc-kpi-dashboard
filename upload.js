@@ -10,9 +10,12 @@ const REQUIRED_COLUMNS = [
   "Delivered"
 ];
 
+const DEFAULT_SUPABASE_URL = "https://llpkkophohaaefznzrij.supabase.co";
+const DEFAULT_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxscGtrb3Bob2hhYWVmem56cmlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzExNjIyMjMsImV4cCI6MjA4NjczODIyM30.F62ObGH2lfSWYP4KbQlaLwzxkmtPN9x70l2WzDkQPGg";
+
 const state = {
-  supabaseUrl: localStorage.getItem("supabase_url") || "",
-  supabaseAnonKey: localStorage.getItem("supabase_anon_key") || "",
+  supabaseUrl: localStorage.getItem("supabase_url") || DEFAULT_SUPABASE_URL,
+  supabaseAnonKey: localStorage.getItem("supabase_anon_key") || DEFAULT_SUPABASE_ANON_KEY,
   supabaseClient: null,
   parsedRows: []
 };

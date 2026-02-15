@@ -143,9 +143,9 @@ body {
   list-style: none;
   padding: 0;
   margin: 0;
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 0.5rem;
-  flex: 1;
 }
 
 .scope-toggle {
@@ -173,7 +173,7 @@ body {
 }
 
 .panel-footer {
-  margin-top: auto;
+  margin-top: 1rem;
   padding-top: 0.9rem;
   border-top: 1px solid #e0e8f4;
 }
