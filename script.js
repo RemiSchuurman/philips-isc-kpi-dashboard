@@ -194,28 +194,36 @@ function buildFillrateDetails(rows, scopeType) {
 
 function buildKpiModel(rows, scopeType) {
   const fillrate = buildFillrateDetails(rows, scopeType);
+  const latestFillrate = fillrate.total[fillrate.total.length - 1];
+  const hasRisk = Number.isFinite(latestFillrate) ? latestFillrate < 93 : true;
   const scopeName = scopeType === "stream" ? "value stream" : "markt";
+
   return {
     Fillrate: fillrate,
     "Unconstrained demand fulfillment": [
-      `Data status: gevuld via Fillrate bron voor ${scopeName}.`,
-      "Volledige UNCONSTRAINED berekening volgt na extra datastromen."
+      `Target: 96.0% | Actual: ${hasRisk ? "94.9%" : "96.8%"} | Status: ${hasRisk ? "red" : "green"}`,
+      `Trend: ${hasRisk ? "-1.1%" : "+0.6%"} vs vorige week`,
+      `Dummydata actief - UNCONSTRAINED nog niet gekoppeld voor ${scopeName}`
     ],
     "USP-CSP": [
-      "Nog niet gekoppeld: upload van USP/CSP brondata nodig.",
-      "Dashboardstructuur staat klaar voor koppeling."
+      `USP adherence: ${hasRisk ? "93.1%" : "96.2%"} | CSP adherence: ${hasRisk ? "93.8%" : "96.9%"} | Status: ${hasRisk ? "yellow" : "green"}`,
+      "Main variance: changeover efficiency op 2 lijnen",
+      "Dummydata actief - USP/CSP bronkoppeling volgt"
     ],
     "Safety stock fulfillment": [
-      "Nog niet gekoppeld: upload van safety stock brondata nodig.",
-      "Toekomstige % en DFS tabellen blijven ondersteund in deze layout."
+      `Policy coverage: ${hasRisk ? "72%" : "84%"} | Status: ${hasRisk ? "yellow" : "green"}`,
+      `Critical SKUs below threshold: ${hasRisk ? "11" : "4"}`,
+      "Dummydata actief - Safety stock bronkoppeling volgt"
     ],
     UVAP: [
-      "Nog niet gekoppeld: UVAP brondata nodig.",
-      "KPI placeholder blijft zichtbaar voor dashboardvolledigheid."
+      `UVAP score: ${hasRisk ? "90.6%" : "92.8%"} | Target: 92.0% | Status: ${hasRisk ? "yellow" : "green"}`,
+      "Impact: promotion mix en timing verschillen",
+      "Dummydata actief - UVAP bronkoppeling volgt"
     ],
     OTTR: [
-      "Nog niet gekoppeld: OTTR brondata nodig.",
-      "Structuur gereed voor volgende data-upload."
+      `On Time To Request: ${hasRisk ? "93.7%" : "95.6%"} | Target: 95.0% | Status: ${hasRisk ? "red" : "green"}`,
+      "Main issue: variatie op outbound handover",
+      "Dummydata actief - OTTR bronkoppeling volgt"
     ]
   };
 }
