@@ -300,38 +300,8 @@ function renderFillrateContent(contentEl, details, scopeType) {
     })
   );
 
-  const actionWrap = document.createElement("div");
-  actionWrap.className = "kpi-table-wrap";
-  const actionTitle = document.createElement("p");
-  actionTitle.className = "kpi-section-title";
-  actionTitle.textContent = "Rootcause, countermeasure en owner";
-  actionWrap.appendChild(actionTitle);
-
-  const actionTable = document.createElement("table");
-  actionTable.className = "kpi-action-table";
-  actionTable.innerHTML = `
-    <thead>
-      <tr>
-        <th>Rootcause</th>
-        <th>Countermeasure</th>
-        <th>Owner</th>
-      </tr>
-    </thead>
-    <tbody>
-      ${details.actions.map((item) => `
-        <tr>
-          <td>${sanitize(item.rootcause)}</td>
-          <td>${sanitize(item.countermeasure)}</td>
-          <td>${sanitize(item.owner)}</td>
-        </tr>
-      `).join("")}
-    </tbody>
-  `;
-  actionWrap.appendChild(actionTable);
-
   contentEl.appendChild(chartWrap);
   contentEl.appendChild(tableWrap);
-  contentEl.appendChild(actionWrap);
 }
 
 function getOpenActionsFor(valueStream, kpiName) {
@@ -438,6 +408,7 @@ function createActionRowElement(valueStream, kpiName, row, tbody) {
   const tr = document.createElement("tr");
   tr.dataset.id = row.id || "";
   tr.dataset.issueNr = row.issue_nr;
+  tr.dataset.editing = "false";
 
   const nrCell = document.createElement("td");
   nrCell.textContent = String(row.issue_nr);
@@ -456,6 +427,7 @@ function createActionRowElement(valueStream, kpiName, row, tbody) {
     input.value = value || "";
     input.setAttribute("data-field", field);
     input.className = "kpi-input";
+    input.disabled = true;
     td.appendChild(input);
     tr.appendChild(td);
   });
@@ -463,15 +435,38 @@ function createActionRowElement(valueStream, kpiName, row, tbody) {
   const actionsCell = document.createElement("td");
   actionsCell.className = "kpi-row-actions";
 
+  const editBtn = document.createElement("button");
+  editBtn.type = "button";
+  editBtn.className = "tiny-btn";
+  editBtn.textContent = "Edit";
+  editBtn.addEventListener("click", () => {
+    tr.dataset.editing = "true";
+    tr.querySelectorAll(".kpi-input").forEach((input) => {
+      input.disabled = false;
+    });
+    tr.classList.add("is-editing");
+    saveBtn.disabled = false;
+  });
+  actionsCell.appendChild(editBtn);
+
   const saveBtn = document.createElement("button");
   saveBtn.type = "button";
   saveBtn.className = "tiny-btn";
   saveBtn.textContent = "Opslaan";
+  saveBtn.disabled = true;
   saveBtn.addEventListener("click", async () => {
     saveBtn.disabled = true;
     const saved = await saveActionRow(valueStream, kpiName, tr);
-    saveBtn.disabled = false;
-    if (saved) rerenderCurrentSelection();
+    if (!saved) {
+      saveBtn.disabled = false;
+      return;
+    }
+    tr.dataset.editing = "false";
+    tr.querySelectorAll(".kpi-input").forEach((input) => {
+      input.disabled = true;
+    });
+    tr.classList.remove("is-editing");
+    rerenderCurrentSelection();
   });
   actionsCell.appendChild(saveBtn);
 

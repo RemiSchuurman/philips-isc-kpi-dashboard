@@ -712,6 +712,16 @@ details.kpi-group[open] .kpi-content {
   background: #fff;
 }
 
+.kpi-input:disabled {
+  background: #f7f9fc;
+  color: #5f6d83;
+  border-color: #dbe5f1;
+}
+
+tr.is-editing .kpi-input {
+  background: #fff;
+}
+
 .kpi-row-actions {
   display: flex;
   gap: 0.35rem;
