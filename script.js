@@ -8,6 +8,7 @@ const appState = {
   selectedScope: null,
   rows: [],
   kpiActions: [],
+  showClosedByKpi: {},
   supabaseUrl: localStorage.getItem("supabase_url") || DEFAULT_SUPABASE_URL,
   supabaseAnonKey: localStorage.getItem("supabase_anon_key") || DEFAULT_SUPABASE_ANON_KEY,
   supabaseClient: null
@@ -304,14 +305,24 @@ function renderFillrateContent(contentEl, details, scopeType) {
   contentEl.appendChild(tableWrap);
 }
 
-function getOpenActionsFor(valueStream, kpiName) {
+function getActionToggleKey(valueStream, kpiName) {
+  return `${valueStream}__${kpiName}`;
+}
+
+function shouldShowClosedActions(valueStream, kpiName) {
+  return Boolean(appState.showClosedByKpi[getActionToggleKey(valueStream, kpiName)]);
+}
+
+function getActionsFor(valueStream, kpiName, includeClosed = false) {
   return appState.kpiActions
-    .filter((row) => row.value_stream === valueStream && row.kpi_name === kpiName && row.status !== "closed")
+    .filter((row) => row.value_stream === valueStream && row.kpi_name === kpiName)
+    .filter((row) => includeClosed || row.status !== "closed")
     .sort((a, b) => a.issue_nr - b.issue_nr);
 }
 
 function buildActionRowsForDisplay(valueStream, kpiName) {
-  const persisted = getOpenActionsFor(valueStream, kpiName).map((row) => ({
+  const includeClosed = shouldShowClosedActions(valueStream, kpiName);
+  const persisted = getActionsFor(valueStream, kpiName, includeClosed).map((row) => ({
     id: row.id,
     issue_nr: row.issue_nr,
     concern: row.concern || "",
@@ -324,7 +335,7 @@ function buildActionRowsForDisplay(valueStream, kpiName) {
 
   const rows = [...persisted];
   let nextNr = rows.length ? Math.max(...rows.map((row) => Number(row.issue_nr) || 0)) + 1 : 1;
-  while (rows.length < 3) {
+  while (rows.filter((row) => row.status !== "closed").length < 3) {
     rows.push({
       id: null,
       issue_nr: nextNr++,
@@ -409,6 +420,7 @@ function createActionRowElement(valueStream, kpiName, row, tbody) {
   tr.dataset.id = row.id || "";
   tr.dataset.issueNr = row.issue_nr;
   tr.dataset.editing = "false";
+  if (row.status === "closed") tr.classList.add("action-row-closed");
 
   const nrCell = document.createElement("td");
   nrCell.textContent = String(row.issue_nr);
@@ -435,47 +447,60 @@ function createActionRowElement(valueStream, kpiName, row, tbody) {
   const actionsCell = document.createElement("td");
   actionsCell.className = "kpi-row-actions";
 
-  const editBtn = document.createElement("button");
-  editBtn.type = "button";
-  editBtn.className = "tiny-btn";
-  editBtn.textContent = "Edit";
-  editBtn.addEventListener("click", () => {
-    tr.dataset.editing = "true";
-    tr.querySelectorAll(".kpi-input").forEach((input) => {
-      input.disabled = false;
-    });
-    tr.classList.add("is-editing");
-    saveBtn.disabled = false;
-  });
-  actionsCell.appendChild(editBtn);
-
-  const saveBtn = document.createElement("button");
-  saveBtn.type = "button";
-  saveBtn.className = "tiny-btn";
-  saveBtn.textContent = "Opslaan";
-  saveBtn.disabled = true;
-  saveBtn.addEventListener("click", async () => {
-    saveBtn.disabled = true;
-    const saved = await saveActionRow(valueStream, kpiName, tr);
-    if (!saved) {
+  if (row.status !== "closed") {
+    const editBtn = document.createElement("button");
+    editBtn.type = "button";
+    editBtn.className = "icon-btn";
+    editBtn.textContent = "✎";
+    editBtn.title = "Edit";
+    editBtn.setAttribute("aria-label", "Edit");
+    editBtn.addEventListener("click", () => {
+      tr.dataset.editing = "true";
+      tr.querySelectorAll(".kpi-input").forEach((input) => {
+        input.disabled = false;
+      });
+      tr.classList.add("is-editing");
       saveBtn.disabled = false;
-      return;
-    }
-    tr.dataset.editing = "false";
-    tr.querySelectorAll(".kpi-input").forEach((input) => {
-      input.disabled = true;
     });
-    tr.classList.remove("is-editing");
-    rerenderCurrentSelection();
-  });
-  actionsCell.appendChild(saveBtn);
+    actionsCell.appendChild(editBtn);
 
-  const closeBtn = document.createElement("button");
-  closeBtn.type = "button";
-  closeBtn.className = "tiny-btn danger";
-  closeBtn.textContent = "Closed";
-  closeBtn.addEventListener("click", () => closeActionRow(valueStream, kpiName, tr));
-  actionsCell.appendChild(closeBtn);
+    const saveBtn = document.createElement("button");
+    saveBtn.type = "button";
+    saveBtn.className = "icon-btn";
+    saveBtn.textContent = "✓";
+    saveBtn.title = "Opslaan";
+    saveBtn.setAttribute("aria-label", "Opslaan");
+    saveBtn.disabled = true;
+    saveBtn.addEventListener("click", async () => {
+      saveBtn.disabled = true;
+      const saved = await saveActionRow(valueStream, kpiName, tr);
+      if (!saved) {
+        saveBtn.disabled = false;
+        return;
+      }
+      tr.dataset.editing = "false";
+      tr.querySelectorAll(".kpi-input").forEach((input) => {
+        input.disabled = true;
+      });
+      tr.classList.remove("is-editing");
+      rerenderCurrentSelection();
+    });
+    actionsCell.appendChild(saveBtn);
+
+    const closeBtn = document.createElement("button");
+    closeBtn.type = "button";
+    closeBtn.className = "icon-btn danger";
+    closeBtn.textContent = "●";
+    closeBtn.title = "Closed";
+    closeBtn.setAttribute("aria-label", "Closed");
+    closeBtn.addEventListener("click", () => closeActionRow(valueStream, kpiName, tr));
+    actionsCell.appendChild(closeBtn);
+  } else {
+    const closedBadge = document.createElement("span");
+    closedBadge.className = "closed-badge";
+    closedBadge.textContent = "Closed";
+    actionsCell.appendChild(closedBadge);
+  }
   tr.appendChild(actionsCell);
 
   tbody.appendChild(tr);
@@ -512,6 +537,9 @@ function renderActionTable(contentEl, valueStream, kpiName) {
   rows.forEach((row) => createActionRowElement(valueStream, kpiName, row, tbody));
   section.appendChild(table);
 
+  const controls = document.createElement("div");
+  controls.className = "action-table-controls";
+
   const addBtn = document.createElement("button");
   addBtn.type = "button";
   addBtn.className = "ghost-btn add-row-btn";
@@ -530,7 +558,20 @@ function renderActionTable(contentEl, valueStream, kpiName) {
       status: "open"
     }, tbody);
   });
-  section.appendChild(addBtn);
+  controls.appendChild(addBtn);
+
+  const toggleClosedBtn = document.createElement("button");
+  toggleClosedBtn.type = "button";
+  toggleClosedBtn.className = "ghost-btn add-row-btn";
+  toggleClosedBtn.textContent = shouldShowClosedActions(valueStream, kpiName) ? "Hide closed" : "Show closed";
+  toggleClosedBtn.addEventListener("click", () => {
+    const key = getActionToggleKey(valueStream, kpiName);
+    appState.showClosedByKpi[key] = !shouldShowClosedActions(valueStream, kpiName);
+    rerenderCurrentSelection();
+  });
+  controls.appendChild(toggleClosedBtn);
+
+  section.appendChild(controls);
 
   contentEl.appendChild(section);
 }
@@ -708,7 +749,6 @@ async function loadKpiActions() {
   const { data, error } = await appState.supabaseClient
     .from("kpi_actions")
     .select("*")
-    .neq("status", "closed")
     .limit(50000);
 
   if (error) {
