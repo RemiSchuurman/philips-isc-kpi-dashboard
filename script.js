@@ -564,7 +564,9 @@ function renderActionTable(contentEl, valueStream, kpiName) {
   toggleClosedBtn.type = "button";
   toggleClosedBtn.className = "ghost-btn add-row-btn";
   toggleClosedBtn.textContent = shouldShowClosedActions(valueStream, kpiName) ? "Hide closed" : "Show closed";
-  toggleClosedBtn.addEventListener("click", () => {
+  toggleClosedBtn.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
     const key = getActionToggleKey(valueStream, kpiName);
     appState.showClosedByKpi[key] = !shouldShowClosedActions(valueStream, kpiName);
     rerenderCurrentSelection();
@@ -576,7 +578,7 @@ function renderActionTable(contentEl, valueStream, kpiName) {
   contentEl.appendChild(section);
 }
 
-function renderKpis(scopeType, scopeName, rows) {
+function renderKpis(scopeType, scopeName, rows, openGroups = new Set()) {
   const kpiData = buildKpiModel(rows, scopeType);
   kpiContainer.innerHTML = "";
 
@@ -597,6 +599,9 @@ function renderKpis(scopeType, scopeName, rows) {
       </span>
     `;
     detailsEl.appendChild(summaryEl);
+    if (openGroups.has(groupName)) {
+      detailsEl.open = true;
+    }
 
     const contentEl = document.createElement("div");
     contentEl.className = "kpi-content";
@@ -638,9 +643,12 @@ function renderKpis(scopeType, scopeName, rows) {
 
 function rerenderCurrentSelection() {
   if (!appState.selectedScope) return;
+  const openGroups = new Set(
+    [...kpiContainer.querySelectorAll(".kpi-group[open] .kpi-title")].map((el) => el.textContent.trim())
+  );
   const rows = getRowsForSelection();
   updateHeader(rows);
-  renderKpis(appState.scopeType, appState.selectedScope, rows);
+  renderKpis(appState.scopeType, appState.selectedScope, rows, openGroups);
 }
 
 function getScopeItems() {

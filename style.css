@@ -702,6 +702,7 @@ details.kpi-group[open] .kpi-content {
   vertical-align: top;
   font-size: 0.74rem;
   padding: 0.28rem 0.34rem;
+  text-align: left;
 }
 
 .action-log-table {
@@ -710,22 +711,22 @@ details.kpi-group[open] .kpi-content {
 
 .action-log-table th:nth-child(1),
 .action-log-table td:nth-child(1) {
-  width: 44px;
+  width: 28px;
 }
 
 .action-log-table th:nth-child(2),
 .action-log-table td:nth-child(2) {
-  width: 22%;
+  width: 24%;
 }
 
 .action-log-table th:nth-child(3),
 .action-log-table td:nth-child(3) {
-  width: 22%;
+  width: 24%;
 }
 
 .action-log-table th:nth-child(4),
 .action-log-table td:nth-child(4) {
-  width: 28%;
+  width: 32%;
 }
 
 .action-log-table th:nth-child(5),
@@ -740,7 +741,8 @@ details.kpi-group[open] .kpi-content {
 
 .action-log-table th:nth-child(7),
 .action-log-table td:nth-child(7) {
-  width: 86px;
+  width: 70px;
+  text-align: right;
 }
 
 .kpi-input {
@@ -765,6 +767,7 @@ tr.is-editing .kpi-input {
 .kpi-row-actions {
   display: flex;
   gap: 0.2rem;
+  justify-content: flex-end;
 }
 
 .icon-btn {
