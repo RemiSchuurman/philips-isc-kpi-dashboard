@@ -525,6 +525,51 @@ async function closeActionRow(valueStream, kpiName, rowEl) {
   rerenderCurrentSelection();
 }
 
+async function reopenActionRow(rowId) {
+  if (!connectSupabase()) {
+    alert("Geen Supabase koppeling gevonden. Stel deze eerst in op /upload.");
+    return;
+  }
+
+  const { data, error } = await appState.supabaseClient
+    .from("kpi_actions")
+    .update({ status: "open" })
+    .eq("id", rowId)
+    .select()
+    .single();
+
+  if (error) {
+    alert(`Heropenen mislukt: ${error.message}`);
+    return;
+  }
+
+  appState.kpiActions = appState.kpiActions.map((row) => (row.id === rowId ? data : row));
+  rerenderCurrentSelection();
+}
+
+async function deleteActionRow(rowId) {
+  if (!connectSupabase()) {
+    alert("Geen Supabase koppeling gevonden. Stel deze eerst in op /upload.");
+    return;
+  }
+
+  const shouldDelete = window.confirm("Weet je zeker dat je deze closed actie definitief wilt verwijderen?");
+  if (!shouldDelete) return;
+
+  const { error } = await appState.supabaseClient
+    .from("kpi_actions")
+    .delete()
+    .eq("id", rowId);
+
+  if (error) {
+    alert(`Verwijderen mislukt: ${error.message}`);
+    return;
+  }
+
+  appState.kpiActions = appState.kpiActions.filter((row) => row.id !== rowId);
+  rerenderCurrentSelection();
+}
+
 function createActionRowElement(valueStream, kpiName, row, tbody) {
   const tr = document.createElement("tr");
   tr.dataset.id = row.id || "";
@@ -608,10 +653,23 @@ function createActionRowElement(valueStream, kpiName, row, tbody) {
     closeBtn.addEventListener("click", () => closeActionRow(valueStream, kpiName, tr));
     actionsWrap.appendChild(closeBtn);
   } else {
-    const closedBadge = document.createElement("span");
-    closedBadge.className = "closed-badge";
-    closedBadge.textContent = "Closed";
-    actionsWrap.appendChild(closedBadge);
+    const reopenBtn = document.createElement("button");
+    reopenBtn.type = "button";
+    reopenBtn.className = "icon-btn";
+    reopenBtn.textContent = "↺";
+    reopenBtn.title = "Reopen";
+    reopenBtn.setAttribute("aria-label", "Reopen");
+    reopenBtn.addEventListener("click", () => reopenActionRow(Number(row.id)));
+    actionsWrap.appendChild(reopenBtn);
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.type = "button";
+    deleteBtn.className = "icon-btn danger";
+    deleteBtn.textContent = "🗑";
+    deleteBtn.title = "Delete";
+    deleteBtn.setAttribute("aria-label", "Delete");
+    deleteBtn.addEventListener("click", () => deleteActionRow(Number(row.id)));
+    actionsWrap.appendChild(deleteBtn);
   }
   actionsCell.appendChild(actionsWrap);
   tr.appendChild(actionsCell);
