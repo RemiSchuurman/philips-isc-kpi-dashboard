@@ -765,9 +765,14 @@ tr.is-editing .kpi-input {
 }
 
 .kpi-row-actions {
-  display: flex;
+  text-align: right;
+}
+
+.kpi-row-actions-wrap {
+  display: inline-flex;
   gap: 0.2rem;
   justify-content: flex-end;
+  align-items: center;
 }
 
 .icon-btn {

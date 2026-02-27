@@ -446,6 +446,8 @@ function createActionRowElement(valueStream, kpiName, row, tbody) {
 
   const actionsCell = document.createElement("td");
   actionsCell.className = "kpi-row-actions";
+  const actionsWrap = document.createElement("div");
+  actionsWrap.className = "kpi-row-actions-wrap";
 
   if (row.status !== "closed") {
     const editBtn = document.createElement("button");
@@ -462,7 +464,7 @@ function createActionRowElement(valueStream, kpiName, row, tbody) {
       tr.classList.add("is-editing");
       saveBtn.disabled = false;
     });
-    actionsCell.appendChild(editBtn);
+    actionsWrap.appendChild(editBtn);
 
     const saveBtn = document.createElement("button");
     saveBtn.type = "button";
@@ -485,7 +487,7 @@ function createActionRowElement(valueStream, kpiName, row, tbody) {
       tr.classList.remove("is-editing");
       rerenderCurrentSelection();
     });
-    actionsCell.appendChild(saveBtn);
+    actionsWrap.appendChild(saveBtn);
 
     const closeBtn = document.createElement("button");
     closeBtn.type = "button";
@@ -494,13 +496,14 @@ function createActionRowElement(valueStream, kpiName, row, tbody) {
     closeBtn.title = "Closed";
     closeBtn.setAttribute("aria-label", "Closed");
     closeBtn.addEventListener("click", () => closeActionRow(valueStream, kpiName, tr));
-    actionsCell.appendChild(closeBtn);
+    actionsWrap.appendChild(closeBtn);
   } else {
     const closedBadge = document.createElement("span");
     closedBadge.className = "closed-badge";
     closedBadge.textContent = "Closed";
-    actionsCell.appendChild(closedBadge);
+    actionsWrap.appendChild(closedBadge);
   }
+  actionsCell.appendChild(actionsWrap);
   tr.appendChild(actionsCell);
 
   tbody.appendChild(tr);
