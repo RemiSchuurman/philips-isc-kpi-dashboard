@@ -56,6 +56,67 @@ for insert
 to anon
 with check (true);
 
+create table if not exists kpi_actions (
+  id bigint generated always as identity primary key,
+  value_stream text not null,
+  kpi_name text not null,
+  issue_nr int not null check (issue_nr > 0),
+  concern text not null default '',
+  cause text not null default '',
+  countermeasure text not null default '',
+  deadline date null,
+  owner text not null default '',
+  status text not null default 'open' check (status in ('open', 'closed')),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create unique index if not exists ux_kpi_actions_business_key
+  on kpi_actions (value_stream, kpi_name, issue_nr);
+
+create index if not exists ix_kpi_actions_scope
+  on kpi_actions (value_stream, kpi_name, status);
+
+create or replace function set_kpi_actions_updated_at()
+returns trigger
+language plpgsql
+as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$;
+
+drop trigger if exists trg_kpi_actions_updated_at on kpi_actions;
+create trigger trg_kpi_actions_updated_at
+before update on kpi_actions
+for each row
+execute function set_kpi_actions_updated_at();
+
+alter table kpi_actions enable row level security;
+
+drop policy if exists "kpi_actions_select_all" on kpi_actions;
+create policy "kpi_actions_select_all"
+on kpi_actions
+for select
+to anon
+using (true);
+
+drop policy if exists "kpi_actions_insert_all" on kpi_actions;
+create policy "kpi_actions_insert_all"
+on kpi_actions
+for insert
+to anon
+with check (true);
+
+drop policy if exists "kpi_actions_update_all" on kpi_actions;
+create policy "kpi_actions_update_all"
+on kpi_actions
+for update
+to anon
+using (true)
+with check (true);
+
 drop policy if exists "fillrate_rows_update_all" on fillrate_rows;
 create policy "fillrate_rows_update_all"
 on fillrate_rows

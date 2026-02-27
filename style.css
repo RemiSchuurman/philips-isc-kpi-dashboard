@@ -697,6 +697,47 @@ details.kpi-group[open] .kpi-content {
   color: #a1222a;
 }
 
+.action-log-table th,
+.action-log-table td {
+  vertical-align: top;
+}
+
+.kpi-input {
+  width: 100%;
+  min-width: 130px;
+  border: 1px solid #c9dbee;
+  border-radius: 8px;
+  padding: 0.32rem 0.42rem;
+  font-size: 0.76rem;
+  background: #fff;
+}
+
+.kpi-row-actions {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.tiny-btn {
+  border: 1px solid #bfd4e8;
+  background: #edf5fc;
+  color: #205384;
+  border-radius: 8px;
+  padding: 0.26rem 0.46rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tiny-btn.danger {
+  border-color: #e7b8be;
+  background: #fff0f2;
+  color: #a0212a;
+}
+
+.add-row-btn {
+  margin-top: 0.5rem;
+}
+
 .status {
   font-weight: 700;
 }

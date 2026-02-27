@@ -41,6 +41,10 @@ De frontend is al gekoppeld op basis van:
    - view per value stream
    - view per markt
 
+Daarnaast wordt in het dashboard per KPI een action-log tabel opgeslagen in `kpi_actions`:
+- kolommen: nr, concern, cause, countermeasure, deadline, owner
+- status `closed` verbergt de regel in het dashboard
+
 ## 5) Security baseline (aanbevolen)
 
 Voor deze MVP staat upload open voor iedereen met de anon key (RLS policies in schema).

@@ -7,6 +7,7 @@ const appState = {
   scopeType: "stream",
   selectedScope: null,
   rows: [],
+  kpiActions: [],
   supabaseUrl: localStorage.getItem("supabase_url") || DEFAULT_SUPABASE_URL,
   supabaseAnonKey: localStorage.getItem("supabase_anon_key") || DEFAULT_SUPABASE_ANON_KEY,
   supabaseClient: null
@@ -333,6 +334,212 @@ function renderFillrateContent(contentEl, details, scopeType) {
   contentEl.appendChild(actionWrap);
 }
 
+function getOpenActionsFor(valueStream, kpiName) {
+  return appState.kpiActions
+    .filter((row) => row.value_stream === valueStream && row.kpi_name === kpiName && row.status !== "closed")
+    .sort((a, b) => a.issue_nr - b.issue_nr);
+}
+
+function buildActionRowsForDisplay(valueStream, kpiName) {
+  const persisted = getOpenActionsFor(valueStream, kpiName).map((row) => ({
+    id: row.id,
+    issue_nr: row.issue_nr,
+    concern: row.concern || "",
+    cause: row.cause || "",
+    countermeasure: row.countermeasure || "",
+    deadline: row.deadline || "",
+    owner: row.owner || "",
+    status: row.status || "open"
+  }));
+
+  const rows = [...persisted];
+  let nextNr = rows.length ? Math.max(...rows.map((row) => Number(row.issue_nr) || 0)) + 1 : 1;
+  while (rows.length < 3) {
+    rows.push({
+      id: null,
+      issue_nr: nextNr++,
+      concern: "",
+      cause: "",
+      countermeasure: "",
+      deadline: "",
+      owner: "",
+      status: "open"
+    });
+  }
+  return rows;
+}
+
+async function saveActionRow(valueStream, kpiName, rowEl) {
+  if (!connectSupabase()) {
+    alert("Geen Supabase koppeling gevonden. Stel deze eerst in op /upload.");
+    return false;
+  }
+
+  const issueNr = Number(rowEl.dataset.issueNr);
+  const id = rowEl.dataset.id ? Number(rowEl.dataset.id) : null;
+  const payload = {
+    value_stream: valueStream,
+    kpi_name: kpiName,
+    issue_nr: issueNr,
+    concern: rowEl.querySelector('[data-field="concern"]').value.trim(),
+    cause: rowEl.querySelector('[data-field="cause"]').value.trim(),
+    countermeasure: rowEl.querySelector('[data-field="countermeasure"]').value.trim(),
+    deadline: rowEl.querySelector('[data-field="deadline"]').value || null,
+    owner: rowEl.querySelector('[data-field="owner"]').value.trim(),
+    status: "open"
+  };
+
+  const { data, error } = await appState.supabaseClient
+    .from("kpi_actions")
+    .upsert(payload, { onConflict: "value_stream,kpi_name,issue_nr" })
+    .select()
+    .single();
+
+  if (error) {
+    alert(`Opslaan mislukt: ${error.message}`);
+    return false;
+  }
+
+  if (id) {
+    appState.kpiActions = appState.kpiActions.map((row) => (row.id === id ? data : row));
+  } else {
+    appState.kpiActions = appState.kpiActions.filter(
+      (row) => !(row.value_stream === data.value_stream && row.kpi_name === data.kpi_name && row.issue_nr === data.issue_nr)
+    );
+    appState.kpiActions.push(data);
+  }
+
+  return true;
+}
+
+async function closeActionRow(valueStream, kpiName, rowEl) {
+  if (!connectSupabase()) {
+    alert("Geen Supabase koppeling gevonden. Stel deze eerst in op /upload.");
+    return;
+  }
+
+  const id = rowEl.dataset.id ? Number(rowEl.dataset.id) : null;
+  if (id) {
+    const { error } = await appState.supabaseClient
+      .from("kpi_actions")
+      .update({ status: "closed" })
+      .eq("id", id);
+    if (error) {
+      alert(`Afsluiten mislukt: ${error.message}`);
+      return;
+    }
+    appState.kpiActions = appState.kpiActions.filter((row) => row.id !== id);
+  }
+
+  rerenderCurrentSelection();
+}
+
+function createActionRowElement(valueStream, kpiName, row, tbody) {
+  const tr = document.createElement("tr");
+  tr.dataset.id = row.id || "";
+  tr.dataset.issueNr = row.issue_nr;
+
+  const nrCell = document.createElement("td");
+  nrCell.textContent = String(row.issue_nr);
+  tr.appendChild(nrCell);
+
+  [
+    ["concern", row.concern],
+    ["cause", row.cause],
+    ["countermeasure", row.countermeasure],
+    ["deadline", row.deadline],
+    ["owner", row.owner]
+  ].forEach(([field, value]) => {
+    const td = document.createElement("td");
+    const input = document.createElement("input");
+    input.type = field === "deadline" ? "date" : "text";
+    input.value = value || "";
+    input.setAttribute("data-field", field);
+    input.className = "kpi-input";
+    td.appendChild(input);
+    tr.appendChild(td);
+  });
+
+  const actionsCell = document.createElement("td");
+  actionsCell.className = "kpi-row-actions";
+
+  const saveBtn = document.createElement("button");
+  saveBtn.type = "button";
+  saveBtn.className = "tiny-btn";
+  saveBtn.textContent = "Opslaan";
+  saveBtn.addEventListener("click", async () => {
+    saveBtn.disabled = true;
+    const saved = await saveActionRow(valueStream, kpiName, tr);
+    saveBtn.disabled = false;
+    if (saved) rerenderCurrentSelection();
+  });
+  actionsCell.appendChild(saveBtn);
+
+  const closeBtn = document.createElement("button");
+  closeBtn.type = "button";
+  closeBtn.className = "tiny-btn danger";
+  closeBtn.textContent = "Closed";
+  closeBtn.addEventListener("click", () => closeActionRow(valueStream, kpiName, tr));
+  actionsCell.appendChild(closeBtn);
+  tr.appendChild(actionsCell);
+
+  tbody.appendChild(tr);
+}
+
+function renderActionTable(contentEl, valueStream, kpiName) {
+  const section = document.createElement("div");
+  section.className = "kpi-table-wrap";
+
+  const sectionTitle = document.createElement("p");
+  sectionTitle.className = "kpi-section-title";
+  sectionTitle.textContent = "Action log";
+  section.appendChild(sectionTitle);
+
+  const table = document.createElement("table");
+  table.className = "kpi-action-table action-log-table";
+  table.innerHTML = `
+    <thead>
+      <tr>
+        <th>Nr</th>
+        <th>Concern</th>
+        <th>Cause</th>
+        <th>Countermeasure</th>
+        <th>Deadline</th>
+        <th>Owner</th>
+        <th>Actie</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  `;
+
+  const tbody = table.querySelector("tbody");
+  const rows = buildActionRowsForDisplay(valueStream, kpiName);
+  rows.forEach((row) => createActionRowElement(valueStream, kpiName, row, tbody));
+  section.appendChild(table);
+
+  const addBtn = document.createElement("button");
+  addBtn.type = "button";
+  addBtn.className = "ghost-btn add-row-btn";
+  addBtn.textContent = "Add";
+  addBtn.addEventListener("click", () => {
+    const existingNrs = [...tbody.querySelectorAll("tr")].map((tr) => Number(tr.dataset.issueNr) || 0);
+    const nextNr = existingNrs.length ? Math.max(...existingNrs) + 1 : 1;
+    createActionRowElement(valueStream, kpiName, {
+      id: null,
+      issue_nr: nextNr,
+      concern: "",
+      cause: "",
+      countermeasure: "",
+      deadline: "",
+      owner: "",
+      status: "open"
+    }, tbody);
+  });
+  section.appendChild(addBtn);
+
+  contentEl.appendChild(section);
+}
+
 function renderKpis(scopeType, scopeName, rows) {
   const kpiData = buildKpiModel(rows, scopeType);
   kpiContainer.innerHTML = "";
@@ -379,6 +586,10 @@ function renderKpis(scopeType, scopeName, rows) {
       renderFillrateContent(contentEl, details, scopeType);
     }
 
+    if (scopeType === "stream" && appState.selectedScope) {
+      renderActionTable(contentEl, appState.selectedScope, groupName);
+    }
+
     detailsEl.appendChild(contentEl);
     kpiContainer.appendChild(detailsEl);
   });
@@ -387,6 +598,13 @@ function renderKpis(scopeType, scopeName, rows) {
   renderList(highlightsList, context.highlights);
   renderList(lowlightsList, context.lowlights);
   renderList(helpList, context.help);
+}
+
+function rerenderCurrentSelection() {
+  if (!appState.selectedScope) return;
+  const rows = getRowsForSelection();
+  updateHeader(rows);
+  renderKpis(appState.scopeType, appState.selectedScope, rows);
 }
 
 function getScopeItems() {
@@ -486,6 +704,27 @@ async function loadFillrateRows() {
   renderScopeList();
 }
 
+async function loadKpiActions() {
+  if (!connectSupabase()) {
+    appState.kpiActions = [];
+    return;
+  }
+
+  const { data, error } = await appState.supabaseClient
+    .from("kpi_actions")
+    .select("*")
+    .neq("status", "closed")
+    .limit(50000);
+
+  if (error) {
+    console.error(error);
+    alert(`Supabase fout bij laden acties: ${error.message}`);
+    return;
+  }
+
+  appState.kpiActions = data || [];
+}
+
 function setupScopeButtons() {
   streamScopeBtn.addEventListener("click", () => setScopeType("stream"));
   marketScopeBtn.addEventListener("click", () => setScopeType("market"));
@@ -498,6 +737,7 @@ async function init() {
     emptyState.textContent = "Nog geen database gekoppeld. Ga naar 'Naar data upload' om SUPABASE_URL en SUPABASE_ANON_KEY in te vullen.";
     return;
   }
+  await loadKpiActions();
   await loadFillrateRows();
 }
 
