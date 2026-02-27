@@ -117,6 +117,42 @@ to anon
 using (true)
 with check (true);
 
+create table if not exists dashboard_notes (
+  id bigint generated always as identity primary key,
+  scope_type text not null check (scope_type in ('stream', 'market')),
+  scope_name text not null,
+  note_type text not null check (note_type in ('highlight', 'lowlight', 'help')),
+  content text not null default '',
+  updated_at timestamptz not null default now()
+);
+
+create unique index if not exists ux_dashboard_notes_scope
+  on dashboard_notes (scope_type, scope_name, note_type);
+
+alter table dashboard_notes enable row level security;
+
+drop policy if exists "dashboard_notes_select_all" on dashboard_notes;
+create policy "dashboard_notes_select_all"
+on dashboard_notes
+for select
+to anon
+using (true);
+
+drop policy if exists "dashboard_notes_insert_all" on dashboard_notes;
+create policy "dashboard_notes_insert_all"
+on dashboard_notes
+for insert
+to anon
+with check (true);
+
+drop policy if exists "dashboard_notes_update_all" on dashboard_notes;
+create policy "dashboard_notes_update_all"
+on dashboard_notes
+for update
+to anon
+using (true)
+with check (true);
+
 drop policy if exists "fillrate_rows_update_all" on fillrate_rows;
 create policy "fillrate_rows_update_all"
 on fillrate_rows

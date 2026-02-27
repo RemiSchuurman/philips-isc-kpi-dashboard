@@ -864,6 +864,23 @@ tr.is-editing .kpi-input {
   color: #4a5872;
 }
 
+.context-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.context-editor {
+  width: 100%;
+  margin-top: 0.45rem;
+  border: 1px solid #c9dbee;
+  border-radius: 8px;
+  padding: 0.42rem 0.5rem;
+  font-size: 0.8rem;
+  resize: vertical;
+}
+
 .context-card ul {
   margin: 0;
   padding-left: 1rem;

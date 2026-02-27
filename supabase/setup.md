@@ -45,6 +45,9 @@ Daarnaast wordt in het dashboard per KPI een action-log tabel opgeslagen in `kpi
 - kolommen: nr, concern, cause, countermeasure, deadline, owner
 - status `closed` verbergt de regel in het dashboard
 
+De kaarten onderaan (`Highlights`, `Lowlights`, `Request for help`) worden opgeslagen in `dashboard_notes`.
+Per scope (value stream of markt) en note-type wordt alleen de actuele tekst bewaard (geen historie).
+
 ## 5) Security baseline (aanbevolen)
 
 Voor deze MVP staat upload open voor iedereen met de anon key (RLS policies in schema).

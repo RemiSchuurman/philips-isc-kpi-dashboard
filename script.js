@@ -8,6 +8,7 @@ const appState = {
   selectedScope: null,
   rows: [],
   kpiActions: [],
+  dashboardNotes: [],
   showClosedByKpi: {},
   supabaseUrl: localStorage.getItem("supabase_url") || DEFAULT_SUPABASE_URL,
   supabaseAnonKey: localStorage.getItem("supabase_anon_key") || DEFAULT_SUPABASE_ANON_KEY,
@@ -26,6 +27,12 @@ const kpiContainer = document.getElementById("kpiContainer");
 const highlightsList = document.getElementById("highlightsList");
 const lowlightsList = document.getElementById("lowlightsList");
 const helpList = document.getElementById("helpList");
+const editHighlightsBtn = document.getElementById("editHighlightsBtn");
+const editLowlightsBtn = document.getElementById("editLowlightsBtn");
+const editHelpBtn = document.getElementById("editHelpBtn");
+const highlightsEditor = document.getElementById("highlightsEditor");
+const lowlightsEditor = document.getElementById("lowlightsEditor");
+const helpEditor = document.getElementById("helpEditor");
 
 function sanitize(value) {
   return String(value ?? "").replace(/[&<>"']/g, (char) => {
@@ -79,6 +86,109 @@ function renderList(targetElement, items) {
     li.textContent = item;
     targetElement.appendChild(li);
   });
+}
+
+function getCustomNote(scopeType, scopeName, noteType) {
+  return appState.dashboardNotes.find(
+    (row) =>
+      row.scope_type === scopeType &&
+      row.scope_name === scopeName &&
+      row.note_type === noteType
+  );
+}
+
+function applyCustomNotes(baseContext, scopeType, scopeName) {
+  const context = { ...baseContext };
+  const mappings = [
+    ["highlight", "highlights"],
+    ["lowlight", "lowlights"],
+    ["help", "help"]
+  ];
+
+  mappings.forEach(([noteType, contextKey]) => {
+    const custom = getCustomNote(scopeType, scopeName, noteType);
+    if (!custom || !custom.content) return;
+    const lines = custom.content
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean);
+    if (lines.length) context[contextKey] = lines;
+  });
+
+  return context;
+}
+
+function setCardEditMode(noteType, editing, lines) {
+  const configs = {
+    highlight: {
+      button: editHighlightsBtn,
+      list: highlightsList,
+      editor: highlightsEditor
+    },
+    lowlight: {
+      button: editLowlightsBtn,
+      list: lowlightsList,
+      editor: lowlightsEditor
+    },
+    help: {
+      button: editHelpBtn,
+      list: helpList,
+      editor: helpEditor
+    }
+  };
+
+  const config = configs[noteType];
+  if (!config) return;
+  if (editing) {
+    config.editor.value = lines.join("\n");
+    config.editor.classList.remove("hidden");
+    config.list.classList.add("hidden");
+    config.button.textContent = "Save";
+    config.button.dataset.editing = "true";
+    return;
+  }
+
+  config.editor.classList.add("hidden");
+  config.list.classList.remove("hidden");
+  config.button.textContent = "Edit";
+  config.button.dataset.editing = "false";
+}
+
+async function saveContextNote(noteType, lines) {
+  if (!appState.selectedScope) return false;
+  if (!connectSupabase()) {
+    alert("Geen Supabase koppeling gevonden. Stel deze eerst in op /upload.");
+    return false;
+  }
+
+  const payload = {
+    scope_type: appState.scopeType,
+    scope_name: appState.selectedScope,
+    note_type: noteType,
+    content: lines.join("\n")
+  };
+
+  const { data, error } = await appState.supabaseClient
+    .from("dashboard_notes")
+    .upsert(payload, { onConflict: "scope_type,scope_name,note_type" })
+    .select()
+    .single();
+
+  if (error) {
+    alert(`Opslaan notitie mislukt: ${error.message}`);
+    return false;
+  }
+
+  appState.dashboardNotes = appState.dashboardNotes.filter(
+    (row) =>
+      !(
+        row.scope_type === data.scope_type &&
+        row.scope_name === data.scope_name &&
+        row.note_type === data.note_type
+      )
+  );
+  appState.dashboardNotes.push(data);
+  return true;
 }
 
 function createMatrixTable(weeks, totalValues, rows, options = {}) {
@@ -638,10 +748,17 @@ function renderKpis(scopeType, scopeName, rows, openGroups = new Set()) {
     kpiContainer.appendChild(detailsEl);
   });
 
-  const context = buildContextNotes(rows, scopeType, scopeName);
+  const context = applyCustomNotes(
+    buildContextNotes(rows, scopeType, scopeName),
+    scopeType,
+    scopeName
+  );
   renderList(highlightsList, context.highlights);
   renderList(lowlightsList, context.lowlights);
   renderList(helpList, context.help);
+  setCardEditMode("highlight", false, context.highlights);
+  setCardEditMode("lowlight", false, context.lowlights);
+  setCardEditMode("help", false, context.help);
 }
 
 function rerenderCurrentSelection() {
@@ -771,6 +888,54 @@ async function loadKpiActions() {
   appState.kpiActions = data || [];
 }
 
+async function loadDashboardNotes() {
+  if (!connectSupabase()) {
+    appState.dashboardNotes = [];
+    return;
+  }
+
+  const { data, error } = await appState.supabaseClient
+    .from("dashboard_notes")
+    .select("*")
+    .limit(50000);
+
+  if (error) {
+    console.error(error);
+    alert(`Supabase fout bij laden notities: ${error.message}`);
+    return;
+  }
+
+  appState.dashboardNotes = data || [];
+}
+
+function setupContextEditors() {
+  const configs = [
+    { noteType: "highlight", button: editHighlightsBtn, editor: highlightsEditor, list: highlightsList },
+    { noteType: "lowlight", button: editLowlightsBtn, editor: lowlightsEditor, list: lowlightsList },
+    { noteType: "help", button: editHelpBtn, editor: helpEditor, list: helpList }
+  ];
+
+  configs.forEach(({ noteType, button, editor, list }) => {
+    button.dataset.editing = "false";
+    button.addEventListener("click", async () => {
+      const editing = button.dataset.editing === "true";
+      if (!editing) {
+        const currentLines = [...list.querySelectorAll("li")].map((li) => li.textContent.trim()).filter(Boolean);
+        setCardEditMode(noteType, true, currentLines);
+        return;
+      }
+
+      const lines = editor.value
+        .split("\n")
+        .map((line) => line.trim())
+        .filter(Boolean);
+      const saved = await saveContextNote(noteType, lines);
+      if (!saved) return;
+      rerenderCurrentSelection();
+    });
+  });
+}
+
 function setupScopeButtons() {
   streamScopeBtn.addEventListener("click", () => setScopeType("stream"));
   marketScopeBtn.addEventListener("click", () => setScopeType("market"));
@@ -778,11 +943,13 @@ function setupScopeButtons() {
 
 async function init() {
   setupScopeButtons();
+  setupContextEditors();
   renderScopeList();
   if (!appState.supabaseUrl || !appState.supabaseAnonKey) {
     emptyState.textContent = "Nog geen database gekoppeld. Ga naar 'Naar data upload' om SUPABASE_URL en SUPABASE_ANON_KEY in te vullen.";
     return;
   }
+  await loadDashboardNotes();
   await loadKpiActions();
   await loadFillrateRows();
 }

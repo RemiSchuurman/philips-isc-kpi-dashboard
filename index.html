@@ -50,16 +50,28 @@
 
         <section class="context-grid">
           <article class="context-card">
-            <h3>Highlights</h3>
+            <div class="context-card-header">
+              <h3>Highlights</h3>
+              <button id="editHighlightsBtn" class="tiny-btn" type="button">Edit</button>
+            </div>
             <ul id="highlightsList"></ul>
+            <textarea id="highlightsEditor" class="context-editor hidden" rows="4"></textarea>
           </article>
           <article class="context-card">
-            <h3>Lowlights</h3>
+            <div class="context-card-header">
+              <h3>Lowlights</h3>
+              <button id="editLowlightsBtn" class="tiny-btn" type="button">Edit</button>
+            </div>
             <ul id="lowlightsList"></ul>
+            <textarea id="lowlightsEditor" class="context-editor hidden" rows="4"></textarea>
           </article>
           <article class="context-card">
-            <h3>Request for help</h3>
+            <div class="context-card-header">
+              <h3>Request for help</h3>
+              <button id="editHelpBtn" class="tiny-btn" type="button">Edit</button>
+            </div>
             <ul id="helpList"></ul>
+            <textarea id="helpEditor" class="context-editor hidden" rows="4"></textarea>
           </article>
         </section>
       </div>
